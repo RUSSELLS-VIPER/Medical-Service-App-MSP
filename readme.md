@@ -118,6 +118,18 @@ UPLOAD_PATH=./public/uploads
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 AUTH_RATE_LIMIT_MAX_REQUESTS=5
+
+# Email Provider Selection (recommended for AWS Amplify)
+# auto: prefers API provider in production/cloud, falls back to SMTP if needed
+EMAIL_PROVIDER=auto
+# Recommended on Amplify to avoid SMTP timeout/network restrictions
+RESEND_API_KEY=your-resend-api-key
+# Optional SMTP hardening if you still use SMTP
+EMAIL_REQUIRE_TLS=true
+EMAIL_FORCE_IPV4=true
+EMAIL_CONNECTION_TIMEOUT=30000
+EMAIL_GREETING_TIMEOUT=20000
+EMAIL_SOCKET_TIMEOUT=30000
 ```
 
 ### 4. Database Setup

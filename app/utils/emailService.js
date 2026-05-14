@@ -9,6 +9,10 @@ const isResendConfigured = () => {
     return !!process.env.RESEND_API_KEY;
 };
 
+const isAmplifyEnvironment = () => {
+    return !!(process.env.AWS_EXECUTION_ENV || process.env.AMPLIFY_APP_ID);
+};
+
 // Create transporter with fallback for development
 const createTransporter = () => {
     if (!isEmailConfigured()) {
@@ -115,11 +119,15 @@ exports.sendEmail = async (options) => {
         subject: options.subject,
         html: options.html
     };
+    const runningOnAmplify = isAmplifyEnvironment();
 
     try {
         let info;
         const provider = (process.env.EMAIL_PROVIDER || 'auto').toLowerCase();
-        const preferResend = provider === 'resend' || (provider === 'auto' && process.env.NODE_ENV === 'production' && isResendConfigured());
+        const inProduction = process.env.NODE_ENV === 'production';
+        const preferResend = provider === 'resend'
+            || (provider === 'auto' && inProduction && isResendConfigured())
+            || (provider === 'auto' && runningOnAmplify && isResendConfigured());
 
         if (preferResend && isResendConfigured()) {
             info = await sendWithResend(mailOptions);
@@ -165,6 +173,7 @@ exports.sendEmail = async (options) => {
             to: options.to,
             subject: options.subject,
             code: error.code,
+            platform: runningOnAmplify ? 'amplify' : 'generic',
             emailHost: process.env.EMAIL_HOST,
             emailPort: process.env.EMAIL_PORT,
             emailSecure: process.env.EMAIL_SECURE
