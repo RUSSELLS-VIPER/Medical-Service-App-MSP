@@ -33,11 +33,15 @@ const createTransporter = () => {
 
     const smtpPort = parseInt(process.env.EMAIL_PORT || '587', 10);
     const smtpSecure = process.env.EMAIL_SECURE === 'true' || smtpPort === 465;
+    const requireTls = process.env.EMAIL_REQUIRE_TLS === 'true';
+    const forceIpv4 = process.env.EMAIL_FORCE_IPV4 === 'true';
 
     return nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: smtpPort,
         secure: smtpSecure,
+        requireTLS: requireTls,
+        family: forceIpv4 ? 4 : undefined,
         connectionTimeout: parseInt(process.env.EMAIL_CONNECTION_TIMEOUT || '15000', 10),
         greetingTimeout: parseInt(process.env.EMAIL_GREETING_TIMEOUT || '10000', 10),
         socketTimeout: parseInt(process.env.EMAIL_SOCKET_TIMEOUT || '20000', 10),
@@ -114,8 +118,12 @@ exports.sendEmail = async (options) => {
 
     try {
         let info;
+        const provider = (process.env.EMAIL_PROVIDER || 'auto').toLowerCase();
+        const preferResend = provider === 'resend' || (provider === 'auto' && process.env.NODE_ENV === 'production' && isResendConfigured());
 
-        if (isEmailConfigured()) {
+        if (preferResend && isResendConfigured()) {
+            info = await sendWithResend(mailOptions);
+        } else if (isEmailConfigured()) {
             const transporter = createTransporter();
             info = await transporter.sendMail(mailOptions);
         } else if (isResendConfigured()) {
@@ -156,7 +164,10 @@ exports.sendEmail = async (options) => {
             error: error.message,
             to: options.to,
             subject: options.subject,
-            code: error.code
+            code: error.code,
+            emailHost: process.env.EMAIL_HOST,
+            emailPort: process.env.EMAIL_PORT,
+            emailSecure: process.env.EMAIL_SECURE
         });
 
         // Provide more specific error messages
