@@ -1,0 +1,64 @@
+<section class="container py-5">
+    <div class="mb-4">
+        <a href="/services" class="btn btn-outline-secondary btn-sm">Back to Services</a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h2 class="mb-2">
+                <%= (provider.professionalTitle ? provider.professionalTitle + ' ' : '') + (provider.firstName || '') + ' ' + (provider.lastName || '') %>
+            </h2>
+            <p class="text-muted mb-1"><strong>Specialization:</strong>
+                <%= provider.specialization || 'General Medicine' %>
+            </p>
+            <p class="text-muted mb-1"><strong>Experience:</strong>
+                <%= provider.yearsOfExperience || 0 %> years
+            </p>
+            <p class="text-muted mb-0"><strong>Location:</strong>
+                <%= (provider.location && (provider.location.city || provider.location.state)) ? ((provider.location.city || '') + (provider.location.city && provider.location.state ? ', ' : '') + (provider.location.state || '')) : 'Not specified' %>
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header"><h5 class="mb-0">Service Offerings</h5></div>
+                <div class="card-body">
+                    <% if (serviceOfferings && serviceOfferings.length > 0) { %>
+                        <% serviceOfferings.forEach(function(service) { %>
+                            <div class="border rounded p-3 mb-3">
+                                <h6 class="mb-1"><%= service.name || 'Service' %></h6>
+                                <div class="small text-muted mb-2"><%= service.category && service.category.name ? service.category.name : 'General' %></div>
+                                <p class="mb-2"><%= service.shortDescription || service.description || '' %></p>
+                                <div><strong>Price:</strong> $<%= service.price || 0 %> | <strong>Duration:</strong> <%= service.duration || 0 %> mins</div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="text-muted mb-0">No active service offerings available.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header"><h5 class="mb-0">Doctor Services</h5></div>
+                <div class="card-body">
+                    <% if (doctorServices && doctorServices.length > 0) { %>
+                        <% doctorServices.forEach(function(service) { %>
+                            <div class="border rounded p-3 mb-3">
+                                <h6 class="mb-1"><%= service.serviceName || 'Consultation' %></h6>
+                                <div class="small text-muted mb-2"><%= service.specialization || 'General' %></div>
+                                <p class="mb-2"><%= service.description || '' %></p>
+                                <div><strong>Price:</strong> $<%= service.basePrice || 0 %> | <strong>Duration:</strong> <%= service.duration || 0 %> mins</div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="text-muted mb-0">No active doctor services available.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

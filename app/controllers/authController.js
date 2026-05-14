@@ -20,6 +20,27 @@ function generateVerificationToken(userId, role) {
     );
 }
 
+function generateOtp() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function hashOtp(otp) {
+    return crypto.createHash('sha256').update(String(otp)).digest('hex');
+}
+
+async function setEmailOtp(user) {
+    const otp = generateOtp();
+    user.verificationOtpHash = hashOtp(otp);
+    user.verificationOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+    return otp;
+}
+
+function buildOtpVerificationUrl(email, role) {
+    const base = process.env.SERVER_URL || '';
+    return `${base}/verify-email-otp?email=${encodeURIComponent(email)}&role=${encodeURIComponent(role)}`;
+}
+
 
 
 class AuthController {
@@ -58,17 +79,20 @@ class AuthController {
             console.log('🔍 Patient email:', patient.email);
             console.log('🔍 Patient password (hashed):', patient.password ? 'HASHED' : 'NOT HASHED');
 
-            // Generate verification token
-            const token = generateVerificationToken(patient._id, 'patient');
-            const url = `${process.env.SERVER_URL}/auth/verify-email?token=${token}`;
+            const otp = await setEmailOtp(patient);
+            const url = buildOtpVerificationUrl(patient.email, 'patient');
 
             let emailWarning = null;
             try {
                 // Send verification email
                 await sendEmail({
                     to: patient.email,
-                    subject: 'Verify Your Email',
-                    html: `<p>Click <a href="${url}">here</a> to verify your email. This link expires in 24 hours.</p>`
+                    subject: 'Your Email Verification OTP',
+                    html: `
+                        <p>Your verification code is: <strong style="font-size: 20px; letter-spacing: 2px;">${otp}</strong></p>
+                        <p>This OTP expires in 10 minutes.</p>
+                        <p>You can verify here: <a href="${url}">${url}</a></p>
+                    `
                 });
             } catch (emailError) {
                 console.error('❌ Email sending failed during patient registration:', emailError.message);
@@ -86,6 +110,7 @@ class AuthController {
                         ? 'Registration successful. Verification email is delayed. Please use resend verification from login page.'
                         : 'Registration successful. Please check your email to verify.',
                     email: patient.email,
+                    role: 'patient',
                     redirectUrl: '/auth/patient/login'
                 });
             }
@@ -284,15 +309,18 @@ class AuthController {
                 }
             }
 
-            // Send verification email
-            const token = generateVerificationToken(provider._id, 'provider');
-            const url = `${process.env.SERVER_URL}/auth/verify-email?token=${token}`;
+            const otp = await setEmailOtp(provider);
+            const url = buildOtpVerificationUrl(provider.email, 'provider');
 
             try {
                 await sendEmail({
                     to: provider.email,
-                    subject: 'Verify Your Provider Account',
-                    html: `<p>Click <a href="${url}">here</a> to verify your account. This link expires in 24 hours.</p>`
+                    subject: 'Your Provider Verification OTP',
+                    html: `
+                        <p>Your provider verification code is: <strong style="font-size: 20px; letter-spacing: 2px;">${otp}</strong></p>
+                        <p>This OTP expires in 10 minutes.</p>
+                        <p>Verify here: <a href="${url}">${url}</a></p>
+                    `
                 });
 
                 // Check if this is a form submission or API call
@@ -394,20 +422,19 @@ class AuthController {
                 });
             }
 
-            const token = generateVerificationToken(provider._id, 'provider');
-            const url = `${process.env.SERVER_URL}/auth/verify-email?token=${token}`;
+            const otp = await setEmailOtp(provider);
+            const url = buildOtpVerificationUrl(provider.email, 'provider');
 
             try {
                 await sendEmail({
                     to: provider.email,
-                    subject: 'Verify Your Provider Account',
+                    subject: 'Your Provider Verification OTP',
                     html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                        <h1 style="color: #3498db;">Verify Your Provider Account</h1>
-                        <p>Please click the button below to verify your account:</p>
-                        <a href="${url}" style="display: inline-block; background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Verify Account</a>
-                        <p>This link will expire in 24 hours.</p>
-                        <p>If you didn't request this verification, please ignore this email.</p>
+                        <h1 style="color: #3498db;">Provider Account Verification</h1>
+                        <p>Your OTP is <strong style="font-size: 20px; letter-spacing: 2px;">${otp}</strong></p>
+                        <p>This OTP expires in 10 minutes.</p>
+                        <p>Verify here: <a href="${url}">${url}</a></p>
                     </div>
                 `
                 });
@@ -845,6 +872,54 @@ class AuthController {
         }
     };
 
+    verifyEmailOtp = async (req, res) => {
+        try {
+            const { email, otp, role } = req.body;
+            if (!email || !otp || !role) {
+                return res.status(400).json({ success: false, message: 'Email, role and OTP are required' });
+            }
+
+            const normalizedRole = String(role).toLowerCase();
+            if (!['patient', 'provider'].includes(normalizedRole)) {
+                return res.status(400).json({ success: false, message: 'Invalid role' });
+            }
+
+            const Model = normalizedRole === 'patient' ? Patient : Provider;
+            const user = await Model.findOne({ email: String(email).toLowerCase().trim() });
+            if (!user) {
+                return res.status(404).json({ success: false, message: 'User not found' });
+            }
+
+            if (user.isVerified) {
+                return res.status(200).json({ success: true, message: 'Email already verified' });
+            }
+
+            if (!user.verificationOtpHash || !user.verificationOtpExpires) {
+                return res.status(400).json({ success: false, message: 'OTP not generated. Please resend OTP.' });
+            }
+
+            if (new Date(user.verificationOtpExpires).getTime() < Date.now()) {
+                return res.status(400).json({ success: false, message: 'OTP expired. Please resend OTP.' });
+            }
+
+            const submittedHash = hashOtp(otp);
+            if (submittedHash !== user.verificationOtpHash) {
+                return res.status(400).json({ success: false, message: 'Invalid OTP' });
+            }
+
+            user.isVerified = true;
+            user.verificationOtpHash = undefined;
+            user.verificationOtpExpires = undefined;
+            await user.save({ validateBeforeSave: false });
+
+            const loginUrl = normalizedRole === 'provider' ? '/auth/provider/login?verified=1' : '/auth/patient/login?verified=1';
+            return res.status(200).json({ success: true, message: 'Email verified successfully', redirectUrl: loginUrl });
+        } catch (err) {
+            console.error('OTP verification error:', err);
+            return res.status(500).json({ success: false, message: 'Failed to verify OTP' });
+        }
+    };
+
     verifyEmail = async (req, res) => {
         try {
             const { token } = req.query;
@@ -887,12 +962,12 @@ class AuthController {
                 });
             }
 
-            // Successful verification - render the view
-            return res.render('auth/verify-email', {
-                success: true,
-                name: user.firstName || user.doctorName,
-                role: role
-            });
+            // Successful verification - redirect directly to role login page
+            if (role === 'provider') {
+                return res.redirect('/auth/provider/login?verified=1');
+            }
+
+            return res.redirect('/auth/patient/login?verified=1');
 
         } catch (err) {
 
@@ -940,17 +1015,17 @@ class AuthController {
                 });
             }
 
-            const token = generateVerificationToken(patient._id, 'patient');
-            const url = `${process.env.SERVER_URL}/auth/verify-email?token=${token}`;
+            const otp = await setEmailOtp(patient);
+            const url = buildOtpVerificationUrl(patient.email, 'patient');
 
             await sendEmail({
                 to: patient.email,
-                subject: 'Verify Your Email Address',
+                subject: 'Your Email Verification OTP',
                 html: `
                     <h1>Verify Your Email</h1>
-                    <p>Please verify your email address by clicking the link below:</p>
-                    <a href="${url}">Verify Email</a>
-                    <p>This link will expire in 24 hours.</p>
+                    <p>Your OTP is: <strong style="font-size: 20px; letter-spacing: 2px;">${otp}</strong></p>
+                    <p>This OTP expires in 10 minutes.</p>
+                    <p>Verify here: <a href="${url}">${url}</a></p>
                     <p>If you didn't request this, please ignore this email.</p>
                 `
             });

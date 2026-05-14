@@ -94,8 +94,8 @@
                                         class="btn btn-primary">
                                         <i class="fas fa-sign-in-alt me-2"></i>Go to Login
                                     </a>
-                                    <a href="/verify-email" class="btn btn-outline-secondary">
-                                        <i class="fas fa-redo me-2"></i>Enter Verification Link Manually
+                                    <a href="/verify-email-otp?<% if (typeof email !== 'undefined' && email) { %>email=<%= encodeURIComponent(email) %>&<% } %>role=<%= typeof role !== 'undefined' && role ? role : 'patient' %>" class="btn btn-outline-secondary">
+                                        <i class="fas fa-redo me-2"></i>Enter OTP Manually
                                     </a>
                                 </div>
                     </div>

@@ -398,7 +398,7 @@ router.post('/register/patient', express.urlencoded({ extended: true }), async (
 
         const Patient = require('../models/Patient');
         const { sendEmail } = require('../utils/emailService');
-        const jwt = require('jsonwebtoken');
+        const crypto = require('crypto');
 
         // Check if email already exists
         const existing = await Patient.findOne({ email });
@@ -421,19 +421,17 @@ router.post('/register/patient', express.urlencoded({ extended: true }), async (
             isVerified: false
         });
 
-        // Generate verification token
-        const token = jwt.sign(
-            { id: patient._id, role: 'patient' },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-        const url = `${process.env.SERVER_URL}/auth/verify-email?token=${token}`;
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+        patient.verificationOtpHash = crypto.createHash('sha256').update(otp).digest('hex');
+        patient.verificationOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
+        await patient.save({ validateBeforeSave: false });
+        const url = `${process.env.SERVER_URL}/verify-email-otp?email=${encodeURIComponent(patient.email)}&role=patient`;
 
         // Send verification email
         await sendEmail({
             to: patient.email,
-            subject: 'Verify Your Email',
-            html: `<p>Click <a href="${url}">here</a> to verify your email. This link expires in 24 hours.</p>`
+            subject: 'Your Email Verification OTP',
+            html: `<p>Your OTP is: <strong>${otp}</strong></p><p>This OTP expires in 10 minutes.</p><p>Verify here: <a href="${url}">${url}</a></p>`
         });
 
         req.flash('success_msg', 'Registration successful! Please check your email for verification.');
@@ -1221,6 +1219,60 @@ router.get('/services/doctors', async (req, res, next) => {
     }
 });
 
+// Public Provider Details Page
+router.get('/providers/:providerId', async (req, res, next) => {
+    try {
+        const { providerId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(providerId)) {
+            return res.status(404).render('error', {
+                title: 'Provider Not Found',
+                message: 'Invalid provider id.',
+                user: req.user || null,
+                currentPage: 'error'
+            });
+        }
+
+        const provider = await Provider.findById(providerId).lean();
+        if (!provider) {
+            return res.status(404).render('error', {
+                title: 'Provider Not Found',
+                message: 'The requested provider was not found.',
+                user: req.user || null,
+                currentPage: 'error'
+            });
+        }
+
+        const serviceOfferings = await ServiceOffering.find({
+            provider: provider._id,
+            isActive: true,
+            approvalStatus: 'approved'
+        })
+            .populate('category', 'name description')
+            .sort({ createdAt: -1 })
+            .lean();
+
+        const doctorServices = await DoctorService.find({
+            provider: provider._id,
+            isActive: true,
+            approvalStatus: 'approved'
+        })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return res.render('services/provider-details', {
+            title: `Provider - ${provider.firstName || ''} ${provider.lastName || ''}`.trim(),
+            provider,
+            serviceOfferings,
+            doctorServices,
+            user: req.user || null,
+            currentPage: 'services'
+        });
+    } catch (err) {
+        console.error('Provider details page error:', err);
+        next(err);
+    }
+});
+
 router.get('/verify-provider', (req, res) => {
     res.render('auth/verify-provider', {
         title: 'Email Verified',
@@ -1234,6 +1286,17 @@ router.get('/verify-email', (req, res) => {
         title: 'Email Verification',
         user: null,
         currentPage: 'verify'
+    });
+});
+
+router.get('/verify-email-otp', (req, res) => {
+    const { email = '', role = 'patient' } = req.query;
+    res.render('auth/verify-otp', {
+        title: 'Verify Email OTP',
+        user: null,
+        currentPage: 'verify',
+        email,
+        role
     });
 });
 

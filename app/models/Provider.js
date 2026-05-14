@@ -61,6 +61,8 @@ const providerSchema = new mongoose.Schema({
     },
     verificationToken: String,
     verificationTokenExpires: Date,
+    verificationOtpHash: String,
+    verificationOtpExpires: Date,
     isVerified: {
         type: Boolean,
         default: false

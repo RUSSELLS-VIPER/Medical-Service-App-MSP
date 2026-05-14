@@ -132,6 +132,7 @@ router.post('/admin/login', handleLoginData, authController.loginAdmin);
 // Verification Routes
 // ======================
 router.get('/verify-email', authController.verifyEmail);
+router.post('/verify-email-otp', authController.verifyEmailOtp);
 router.post('/patient/resend-verification', authController.resendVerificationEmail);
 router.post('/provider/resend-verification', authController.resendProviderVerification);
 router.get('/provider/verify', authController.verifyProvider);

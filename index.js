@@ -276,6 +276,15 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     const statusCode = err.status || 500;
 
+    try {
+        console.error('Request error:', {
+            method: req.method,
+            url: req.originalUrl,
+            statusCode,
+            message: err.message,
+            stack: err.stack
+        });
+    } catch (_) { }
 
     res.status(statusCode);
 

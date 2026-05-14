@@ -73,6 +73,8 @@ const patientSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    verificationOtpHash: String,
+    verificationOtpExpires: Date,
     verificationToken: String,
     verificationTokenExpires: Date
 });
