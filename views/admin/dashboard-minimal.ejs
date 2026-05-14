@@ -1,0 +1,11 @@
+<%- include('../layouts/sb-admin', { title: title || 'Admin Dashboard' , currentPage: 'dashboard' , body:
+    include('./partials/dashboard-minimal-body', { title: typeof title !=='undefined' ? title : undefined, currentPage:
+    typeof currentPage !=='undefined' ? currentPage : undefined, user: typeof user !=='undefined' ? user : undefined,
+    totalUsers: typeof totalUsers !=='undefined' ? totalUsers : undefined, totalPatients: typeof totalPatients
+    !=='undefined' ? totalPatients : undefined, totalProviders: typeof totalProviders !=='undefined' ? totalProviders :
+    undefined, totalAppointments: typeof totalAppointments !=='undefined' ? totalAppointments : undefined,
+    pendingVerifications: typeof pendingVerifications !=='undefined' ? pendingVerifications : undefined,
+    pendingServices: typeof pendingServices !=='undefined' ? pendingServices : undefined, pendingDocuments: typeof
+    pendingDocuments !=='undefined' ? pendingDocuments : undefined, recentAppointments: typeof recentAppointments
+    !=='undefined' ? recentAppointments : undefined, recentActivity: typeof recentActivity !=='undefined' ?
+    recentActivity : undefined }) }) %>

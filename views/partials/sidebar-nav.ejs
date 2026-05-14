@@ -1,0 +1,134 @@
+<!-- Sidebar -->
+<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin/dashboard">
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-heartbeat"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Healthcare MSP</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('dashboard') ? 'active' : '' %>"
+            href="/admin/dashboard">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        MANAGEMENT
+    </div>
+
+    <!-- Nav Item - Patients -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('patients') ? 'active' : '' %>"
+            href="/admin/patients">
+            <i class="fas fa-fw fa-user"></i>
+            <span>Patients</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Providers -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('providers') ? 'active' : '' %>"
+            href="/admin/providers">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Providers</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Verifications -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('verifications') ? 'active' : '' %>"
+            href="/admin/verifications">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>Verifications</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Service Categories -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('service-categories') ? 'active' : '' %>"
+            href="/admin/service-categories">
+            <i class="fas fa-fw fa-list"></i>
+            <span>Service Categories</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Service Offerings -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('services') ? 'active' : '' %>"
+            href="/admin/services">
+            <i class="fas fa-fw fa-stethoscope"></i>
+            <span>Service Offerings</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Appointments -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('appointments') ? 'active' : '' %>"
+            href="/admin/appointments">
+            <i class="fas fa-fw fa-calendar"></i>
+            <span>Appointments</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        ANALYTICS
+    </div>
+
+    <!-- Nav Item - Reports -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('reports') ? 'active' : '' %>" href="/admin/reports">
+            <i class="fas fa-fw fa-chart-bar"></i>
+            <span>Reports</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        SYSTEM
+    </div>
+
+    <!-- Nav Item - Settings -->
+    <li class="nav-item">
+        <a class="nav-link <%= currentPage && currentPage.includes('settings') ? 'active' : '' %>"
+            href="/admin/settings">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Settings</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Logout (all roles) -->
+    <li class="nav-item">
+        <a class="nav-link" href="/logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </li>
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+</ul>
+<!-- End of Sidebar -->

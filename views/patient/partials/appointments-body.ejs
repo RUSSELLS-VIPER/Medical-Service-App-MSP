@@ -1,0 +1,206 @@
+<!-- Page Heading -->
+
+
+<!-- Statistics Row -->
+
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-filter"></i> Filter Appointments</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-control" id="statusFilter" onchange="filterAppointments()">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="no_show">No Show</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateFilter" class="form-label">Date Range</label>
+                        <select class="form-control" id="dateFilter" onchange="filterAppointments()">
+                            <option value="">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="past">Past</option>
+                            <option value="upcoming">Upcoming</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchFilter" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="searchFilter"
+                            placeholder="Search by service or provider..." onkeyup="filterAppointments()">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary btn-block" onclick="resetFilters()"><i
+                                class="fas fa-sync-alt mr-2"></i>Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments Table -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-calendar-check"></i> Appointment Details
+                </h6>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary btn-sm" onclick="exportAppointments()"><i
+                            class="fas fa-download mr-1"></i>Export</button>
+                    <button class="btn btn-outline-success btn-sm" onclick="refreshAppointments()"><i
+                            class="fas fa-sync-alt mr-1"></i>Refresh</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <% if ((appointments || []).length> 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="appointmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Provider</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% appointments.forEach(function(appointment) { %>
+                                    <tr class="appointment-row" data-status="<%= appointment.status %>"
+                                        data-date="<%= appointment.date %>"
+                                        data-service="<%= appointment.serviceName || 'Appointment' %>"
+                                        data-provider="<%= appointment.providerName || 'Provider' %>">
+                                        <td>
+                                            <strong>
+                                                <%= appointment.serviceName || 'Appointment' %>
+                                            </strong>
+                                            <br><small class="text-muted">
+                                                <%= appointment.duration || 60 %> minutes
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <strong>Dr. <%= appointment.providerName || 'Provider' %></strong>
+                                            <br><small class="text-muted">
+                                                <%= appointment.providerInfo ? (appointment.providerInfo.specialization
+                                                    || 'Healthcare Provider' ) : 'Provider' %>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <%= new Date(appointment.date).toLocaleDateString() %>
+                                            </strong>
+                                            <br><small class="text-muted">
+                                                <%= appointment.startTime %> - <%= appointment.endTime %>
+                                            </small>
+                                            <% if (new Date(appointment.date).toDateString()===new
+                                                Date().toDateString()) { %>
+                                                <br><span class="badge badge-warning">Today</span>
+                                                <% } %>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge badge-<%= appointment.status === 'pending' ? 'warning' : appointment.status === 'confirmed' ? 'success' : appointment.status === 'completed' ? 'info' : appointment.status === 'cancelled' ? 'danger' : appointment.status === 'no_show' ? 'secondary' : 'primary' %>">
+                                                <%= appointment.status ? appointment.status.charAt(0).toUpperCase() +
+                                                    appointment.status.slice(1).replace('_', ' ' ) : 'Scheduled' %>
+                                            </span>
+                                        </td>
+                                        <!-- Notes and Actions columns removed as requested -->
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar fa-3x mb-3"></i>
+                            <h5>No Appointments Yet</h5>
+                            <p>You haven't booked any appointments yet. Start by finding a healthcare provider.</p>
+                            <a href="/services" class="btn btn-primary"><i class="fas fa-search"></i> Find Services</a>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Actions
+    function viewAppointmentDetails(appointmentId) { window.location.href = `/patient/appointments/${appointmentId}`; }
+    function confirmAppointment(appointmentId) { if (confirm('Confirm this appointment?')) updateAppointmentStatus(appointmentId, 'confirmed'); }
+    function rescheduleAppointment(appointmentId) { if (confirm('Reschedule this appointment?')) window.location.href = `/patient/appointments/${appointmentId}/reschedule`; }
+    function cancelAppointment(appointmentId) { const reason = prompt('Reason for cancellation:'); if (reason !== null) updateAppointmentStatus(appointmentId, 'cancelled', reason); }
+    async function updateAppointmentStatus(appointmentId, status, reason = '') {
+        try {
+            const response = await fetch(`/api/patient/appointments/${appointmentId}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status, cancellationReason: reason || undefined }) });
+            const data = await response.json();
+            if (data.success) { showAlert(`Appointment ${status} successfully!`, 'success'); setTimeout(() => window.location.reload(), 1200); } else { showAlert(data.message || `Failed to ${status} appointment`, 'danger'); }
+        } catch (e) { showAlert('An error occurred while updating the appointment', 'danger'); }
+    }
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>`;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+    // Filters
+    function filterAppointments() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+        const rows = document.querySelectorAll('.appointment-row');
+        rows.forEach(row => {
+            let show = true;
+            if (statusFilter && row.dataset.status !== statusFilter) show = false;
+            if (dateFilter) {
+                const appointmentDate = new Date(row.dataset.date);
+                const today = new Date();
+                const startOfWeek = new Date(today); startOfWeek.setDate(today.getDate() - today.getDay());
+                const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                switch (dateFilter) {
+                    case 'today': if (appointmentDate.toDateString() !== today.toDateString()) show = false; break;
+                    case 'week': if (appointmentDate < startOfWeek || appointmentDate > today) show = false; break;
+                    case 'month': if (appointmentDate < startOfMonth || appointmentDate > today) show = false; break;
+                    case 'past': if (appointmentDate >= today) show = false; break;
+                    case 'upcoming': if (appointmentDate < today) show = false; break;
+                }
+            }
+            if (searchFilter) {
+                const service = row.dataset.service.toLowerCase();
+                const provider = row.dataset.provider.toLowerCase();
+                if (!service.includes(searchFilter) && !provider.includes(searchFilter)) show = false;
+            }
+            row.style.display = show ? '' : 'none';
+        });
+    }
+    function resetFilters() { document.getElementById('statusFilter').value = ''; document.getElementById('dateFilter').value = ''; document.getElementById('searchFilter').value = ''; filterAppointments(); }
+    function refreshAppointments() { window.location.reload(); }
+    function exportAppointments() {
+        const rows = document.querySelectorAll('.appointment-row:not([style*="display: none"])');
+        let csv = 'Service,Provider,Date,Time,Status\n';
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            const service = cells[0].textContent.trim().replace(/,/g, ';');
+            const provider = cells[1].textContent.trim().replace(/,/g, ';');
+            const dateTime = cells[2].textContent.trim().replace(/,/g, ';');
+            const status = cells[3].textContent.trim().replace(/,/g, ';');
+            csv += `${service},${provider},${dateTime},${status}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'appointments.csv'; a.click(); window.URL.revokeObjectURL(url);
+    }
+</script>

@@ -1,0 +1,6 @@
+<%- include('../layouts/sb-admin', { title: 'Manage Verifications' , currentPage: 'verifications' , body:
+    include('./partials/verifications-body', { providerVerifications: typeof verifications !=='undefined' ?
+    verifications : [], pendingServices: typeof pendingServices !=='undefined' ? pendingServices : [], stats: (typeof
+    stats !=='undefined' && stats) ? stats : { pending: (typeof pendingCount !=='undefined' ? pendingCount : 0),
+    approved: (typeof approvedCount !=='undefined' ? approvedCount : 0), rejected: (typeof rejectedCount !=='undefined'
+    ? rejectedCount : 0) } }) }) %>

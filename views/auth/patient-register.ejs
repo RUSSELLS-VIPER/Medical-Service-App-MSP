@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Patient Registration - Healthcare System</title>
+
+    <!-- Custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Hero Section -->
+    <div class="bg-primary text-white py-5 mb-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold mb-3">
+                        <i class="fas fa-user-plus me-3"></i>
+                        Join Our Healthcare Family
+                    </h1>
+                    <p class="lead mb-4">
+                        Create your patient account to access quality healthcare services,
+                        book appointments, and manage your health records securely.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <span>Secure & Private</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock me-2"></i>
+                                <span>24/7 Access</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-mobile-alt me-2"></i>
+                                <span>Mobile Friendly</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="fas fa-user-md" style="font-size: 6rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-white py-4">
+                        <div class="text-center">
+                            <i class="fas fa-user-circle text-primary mb-3" style="font-size: 3rem;"></i>
+                            <h2 class="h3 mb-2">Create Your Account</h2>
+                            <p class="text-muted">Fill in your details to get started</p>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <!-- Progress Steps -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mb-2"
+                                        style="width: 40px; height: 40px;">
+                                        <span class="fw-bold">1</span>
+                                    </div>
+                                    <small class="text-primary fw-semibold">Personal Info</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3">
+                                    <hr class="border-primary">
+                                </div>
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mb-2"
+                                        style="width: 40px; height: 40px;">
+                                        <span class="fw-bold">2</span>
+                                    </div>
+                                    <small class="text-muted">Account Details</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3">
+                                    <hr class="border-secondary">
+                                </div>
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mb-2"
+                                        style="width: 40px; height: 40px;">
+                                        <span class="fw-bold">3</span>
+                                    </div>
+                                    <small class="text-muted">Complete</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form action="/auth/register/patient" method="POST" id="patientRegisterForm" novalidate>
+                            <!-- Personal Information Section -->
+                            <div class="mb-4">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-user me-2"></i>
+                                    Personal Information
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label">
+                                            <i class="fas fa-user me-1"></i>First Name
+                                        </label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName"
+                                            placeholder="Enter your first name" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Last Name
+                                        </label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName"
+                                            placeholder="Enter your last name" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="email" class="form-label">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
+                                        </label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            placeholder="Enter your email address" required>
+                                        <div class="invalid-feedback"></div>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            We'll use this to send you appointment confirmations and health updates.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">
+                                            <i class="fas fa-phone me-1"></i>Phone Number
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone"
+                                            placeholder="(123) 456-7890" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="dateOfBirth" class="form-label">
+                                            <i class="fas fa-calendar me-1"></i>Date of Birth
+                                        </label>
+                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth"
+                                            required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="gender" class="form-label">
+                                            <i class="fas fa-venus-mars me-1"></i>Gender
+                                        </label>
+                                        <select class="form-select" id="gender" name="gender" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                            <option value="prefer-not-to-say">Prefer not to say</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">
+                                            <i class="fas fa-map-marker-alt me-1"></i>Address (Optional)
+                                        </label>
+                                        <textarea class="form-control" id="address" name="address"
+                                            placeholder="Enter your address" rows="3"></textarea>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            This helps us provide location-based healthcare recommendations.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Security Section -->
+                            <div class="mb-4">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Account Security
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">
+                                            <i class="fas fa-key me-1"></i>Password
+                                        </label>
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            placeholder="Enter your password" required minlength="8">
+                                        <div class="invalid-feedback"></div>
+                                        <!-- Password Strength Indicator -->
+                                        <div class="mt-2">
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar" id="passwordStrength" role="progressbar"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <small class="text-muted" id="passwordStrengthText">Password
+                                                strength</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label">
+                                            <i class="fas fa-key me-1"></i>Confirm Password
+                                        </label>
+                                        <input type="password" class="form-control" id="confirmPassword"
+                                            name="confirmPassword" placeholder="Confirm your password" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Password Requirements -->
+                                <div class="alert alert-info mt-3">
+                                    <h6 class="alert-heading mb-2">
+                                        <i class="fas fa-info-circle me-1"></i>Password Requirements:
+                                    </h6>
+                                    <ul class="mb-0">
+                                        <li>At least 8 characters long</li>
+                                        <li>Contains uppercase and lowercase letters</li>
+                                        <li>Contains at least one number</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        <strong>I agree to the</strong>
+                                        <a href="/terms" target="_blank" class="text-primary">Terms and Conditions</a>
+                                        <strong>and</strong>
+                                        <a href="/privacy" target="_blank" class="text-primary">Privacy Policy</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must agree to the terms and conditions to continue.
+                                    </div>
+                                </div>
+
+                                <div class="form-check mt-3">
+                                    <input class="form-check-input" type="checkbox" id="newsletter">
+                                    <label class="form-check-label" for="newsletter">
+                                        <i class="fas fa-envelope me-1"></i>
+                                        Send me health tips and appointment reminders via email
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                    <i class="fas fa-user-plus me-2"></i>
+                                    Create My Account
+                                </button>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <p class="text-muted mb-0">
+                                    Already have an account?
+                                    <a href="/login" class="text-primary fw-semibold">
+                                        <i class="fas fa-sign-in-alt me-1"></i>
+                                        Sign in here
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information Cards -->
+    <div class="container mt-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-shield-alt text-primary mb-3" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title">Secure & Private</h5>
+                        <p class="card-text text-muted">
+                            Your personal health information is encrypted and protected with industry-standard security
+                            measures.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-mobile-alt text-primary mb-3" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title">Mobile Access</h5>
+                        <p class="card-text text-muted">
+                            Access your health records, book appointments, and communicate with providers from anywhere.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-user-md text-primary mb-3" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title">Expert Care</h5>
+                        <p class="card-text text-muted">
+                            Connect with verified healthcare providers and specialists for comprehensive medical care.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Custom styles for enhanced Bootstrap components */
+        .card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-control:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+        }
+
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Loading state for button */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('patientRegisterForm');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const passwordStrength = document.getElementById('passwordStrength');
+            const passwordStrengthText = document.getElementById('passwordStrengthText');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Password strength checker
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                let feedback = '';
+                let colorClass = '';
+
+                if (password.length >= 8) strength += 25;
+                if (/[a-z]/.test(password)) strength += 25;
+                if (/[A-Z]/.test(password)) strength += 25;
+                if (/[0-9]/.test(password)) strength += 25;
+
+                if (strength < 25) {
+                    feedback = 'Very Weak';
+                    colorClass = 'bg-danger';
+                } else if (strength < 50) {
+                    feedback = 'Weak';
+                    colorClass = 'bg-warning';
+                } else if (strength < 75) {
+                    feedback = 'Fair';
+                    colorClass = 'bg-info';
+                } else if (strength < 100) {
+                    feedback = 'Good';
+                    colorClass = 'bg-primary';
+                } else {
+                    feedback = 'Strong';
+                    colorClass = 'bg-success';
+                }
+
+                passwordStrength.style.width = strength + '%';
+                passwordStrength.className = 'progress-bar ' + colorClass;
+                passwordStrengthText.textContent = feedback;
+            }
+
+            // Real-time password strength checking
+            passwordInput.addEventListener('input', function () {
+                checkPasswordStrength(this.value);
+            });
+
+            // Password confirmation validation
+            confirmPasswordInput.addEventListener('input', function () {
+                if (this.value !== passwordInput.value) {
+                    this.setCustomValidity('Passwords do not match');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+
+            // Form validation
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Check if passwords match
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    confirmPasswordInput.setCustomValidity('Passwords do not match');
+                    confirmPasswordInput.classList.add('is-invalid');
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+
+                // Submit form
+                setTimeout(() => {
+                    form.submit();
+                }, 1000);
+            });
+
+            // Real-time validation
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function () {
+                    if (this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            });
+
+            // Add fade-in animation to cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = (index * 0.1) + 's';
+                card.classList.add('fade-in');
+            });
+
+            // Phone number formatting
+            const phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', function () {
+                let value = this.value.replace(/\\D/g, '');
+                if (value.length >= 6) {
+                    value = value.replace(/(\\d{3})(\\d{3})(\\d{4})/, '($1) $2-$3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\\d{3})(\\d{0,3})/, '($1) $2');
+                }
+                this.value = value;
+            });
+
+            // Date of birth validation (must be in the past)
+            const dobInput = document.getElementById('dateOfBirth');
+            dobInput.addEventListener('change', function () {
+                const today = new Date();
+                const selectedDate = new Date(this.value);
+
+                if (selectedDate >= today) {
+                    this.setCustomValidity('Date of birth must be in the past');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+        });
+    </script>
+    <!-- jQuery + Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+</html>

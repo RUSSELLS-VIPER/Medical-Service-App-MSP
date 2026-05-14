@@ -1,0 +1,208 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Admin Dashboard</h1>
+</div>
+
+<!-- Content Row -->
+<div class="row mb-3">
+    <!-- Total Users Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Users
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof totalUsers !=='undefined' ? totalUsers : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Appointments Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Appointments
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof totalAppointments !=='undefined' ? totalAppointments : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Services Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Total Services
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof totalServices !=='undefined' ? totalServices : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-stethoscope fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Revenue Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Total Revenue
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            $<%= typeof totalRevenue !=='undefined' ? totalRevenue : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row mb-3">
+    <!-- Quick Actions -->
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a href="/admin/patients" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-injured mr-2"></i>
+                            Manage Patients
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a href="/admin/providers" class="btn btn-info btn-block">
+                            <i class="fas fa-user-md mr-2"></i>
+                            Manage Providers
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">System Status</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <div class="icon-circle bg-success mb-2">
+                                <i class="fas fa-database text-white"></i>
+                            </div>
+                            <div class="small text-gray-600">Database</div>
+                            <div class="text-success font-weight-bold">Online</div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="text-center">
+                            <div class="icon-circle bg-info mb-2">
+                                <i class="fas fa-server text-white"></i>
+                            </div>
+                            <div class="small text-gray-600">Server</div>
+                            <div class="text-info font-weight-bold">Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Patients Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-user-injured mr-2"></i>Recent Patients</h6>
+        <a href="/admin/patients" class="btn btn-sm btn-outline-primary">View all</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Gender</th>
+                        <th>Verified</th>
+                        <th>Registered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof recentPatients !=='undefined' && recentPatients && recentPatients.length> 0) { %>
+                        <% recentPatients.forEach(function(p){ %>
+                            <tr>
+                                <td>
+                                    <%= p.firstName %>
+                                        <%= p.lastName %>
+                                </td>
+                                <td>
+                                    <%= p.email %>
+                                </td>
+                                <td>
+                                    <%= p.phone || 'N/A' %>
+                                </td>
+                                <td class="text-capitalize">
+                                    <%= p.gender || 'N/A' %>
+                                </td>
+                                <td>
+                                    <span class="badge badge-<%= p.isVerified ? 'success' : 'secondary' %>">
+                                        <%= p.isVerified ? 'Yes' : 'No' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <%= new Date(p.createdAt).toLocaleDateString() %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No patients found</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

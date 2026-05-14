@@ -1,0 +1,155 @@
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center style:margin-top:10rem;">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-users mr-2"></i>Manage Patients
+        </h1>
+        <p class="text-muted">View and manage all registered patients</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="refreshPatients()">
+            <i class="fas fa-sync-alt mr-2"></i>Refresh
+        </button>
+        <button class="btn btn-success" onclick="exportPatients()">
+            <i class="fas fa-download mr-2"></i>Export
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-left-primary shadow h-100 py-3 text-center">
+            <div class="card-body">
+                <div class="h4 mb-1 font-weight-bold text-gray-800" id="totalPatients">
+                    <%= Array.isArray(patients) ? patients.length : 0 %>
+                </div>
+                <div class="text-xs text-uppercase text-primary font-weight-bold">Total Patients</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-left-success shadow h-100 py-3 text-center">
+            <div class="card-body">
+                <div class="h4 mb-1 font-weight-bold text-gray-800" id="activePatients">0</div>
+                <div class="text-xs text-uppercase text-success font-weight-bold">Active Patients</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-left-info shadow h-100 py-3 text-center">
+            <div class="card-body">
+                <div class="h4 mb-1 font-weight-bold text-gray-800" id="newThisMonth">0</div>
+                <div class="text-xs text-uppercase text-info font-weight-bold">New This Month</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-left-warning shadow h-100 py-3 text-center">
+            <div class="card-body">
+                <div class="h4 mb-1 font-weight-bold text-gray-800" id="averageAge">0</div>
+                <div class="text-xs text-uppercase text-warning font-weight-bold">Average Age</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search patients...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-control" id="statusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-control" id="genderFilter">
+                    <option value="">All Genders</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary btn-block" onclick="clearFilters()">
+                    <i class="fas fa-times mr-1"></i>Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patients Table -->
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list mr-2"></i>Patients List</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="patientsTable">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Status</th>
+                        <th>Registration Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsTableBody">
+                    <% if (Array.isArray(patients) && patients.length> 0) { %>
+                        <% patients.forEach(function(p){ %>
+                            <tr>
+                                <td>
+                                    <%= [p.firstName, p.lastName].filter(Boolean).join(' ') || ' -' %>
+                                </td>
+                                <td>
+                                    <%= p.email || '-' %>
+                                </td>
+                                <td>
+                                    <%= p.phone || '-' %>
+                                </td>
+                                <td>
+                                    <%= p.dateOfBirth ? new Date(p.dateOfBirth).toLocaleDateString() : '-' %>
+                                </td>
+                                <td>
+                                    <%= p.gender || '-' %>
+                                </td>
+                                <td>
+                                    <span class="badge <%= p.isVerified ? 'badge-success' : 'badge-warning' %>">
+                                        <%= p.isVerified ? 'Verified' : 'Pending' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <%= p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '-' %>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>View</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">No patients found.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

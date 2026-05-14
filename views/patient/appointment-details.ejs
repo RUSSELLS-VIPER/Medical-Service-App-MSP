@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>
+        <%= title %>
+    </title>
+    <style>
+        .topbar {
+            display: none !important;
+        }
+
+        .sidebar.sidebar-dark .nav-item .nav-link,
+        .sidebar.sidebar-dark .sidebar-heading,
+        .sidebar.sidebar-dark .nav-item.active .nav-link,
+        .sidebar.sidebar-dark .nav-item .nav-link i,
+        .sidebar.sidebar-dark .badge-counter {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+
+</html>
+<%- include('../layouts/sb-admin', { title: title , currentPage: 'appointments' , body:
+    include('./partials/appointment-details-body', { appointment: appointment }) }) %>

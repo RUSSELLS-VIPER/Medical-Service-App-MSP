@@ -1,0 +1,237 @@
+<%- include('../layouts/sb-admin-fixed', { title: 'Appointments Management' , breadcrumb: [ { text: 'Dashboard' ,
+    url: '/admin/dashboard' }, { text: 'Appointments' , url: '/admin/appointments' } ], currentPage: 'appointments' ,
+    body: ` <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Appointments Management</h1>
+        <div>
+            <button class="btn btn-sm btn-success mr-2" onclick="exportAppointments()">
+                <i class="fas fa-download fa-sm text-white-50"></i> Export
+            </button>
+            <button class="btn btn-sm btn-primary" onclick="createAppointment()">
+                <i class="fas fa-plus fa-sm text-white-50"></i> Create
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Appointments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalAppointments">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Confirmed</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="confirmedAppointments">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingAppointments">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Cancelled</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="cancelledAppointments">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">All Appointments</h6>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdown"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter by Status
+                </button>
+                <div class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <a class="dropdown-item" href="#" data-filter="all">All</a>
+                    <a class="dropdown-item" href="#" data-filter="confirmed">Confirmed</a>
+                    <a class="dropdown-item" href="#" data-filter="pending">Pending</a>
+                    <a class="dropdown-item" href="#" data-filter="cancelled">Cancelled</a>
+                    <a class="dropdown-item" href="#" data-filter="completed">Completed</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="appointmentsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Provider</th>
+                            <th>Service</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    `
+    }) %>
+
+    <script>
+        const appointments = <% - JSON.stringify(appointments || []) %>;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateStatsFromData(appointments);
+            renderAppointmentsTable(appointments);
+
+            // Simple filter handler
+            document.querySelectorAll('[data-filter]')?.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const filter = link.getAttribute('data-filter');
+                    const filtered = filter === 'all' ? appointments : appointments.filter(a => a.status === filter);
+                    renderAppointmentsTable(filtered);
+                    updateStatsFromData(filtered);
+                });
+            });
+        });
+
+        function updateStatsFromData(list) {
+            const total = list.length;
+            const confirmed = list.filter(a => a.status === 'confirmed').length;
+            const pending = list.filter(a => a.status === 'pending').length;
+            const cancelled = list.filter(a => a.status === 'cancelled').length;
+
+            document.getElementById('totalAppointments').textContent = total;
+            document.getElementById('confirmedAppointments').textContent = confirmed;
+            document.getElementById('pendingAppointments').textContent = pending;
+            document.getElementById('cancelledAppointments').textContent = cancelled;
+        }
+
+        function renderAppointmentsTable(list) {
+            const tbody = document.getElementById('appointmentsTableBody');
+            if (!tbody) return;
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center">No appointments found</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = list.map(appointment => `
+            <tr>
+                <td>
+                    <div>
+                        <strong>${appointment.patient ? `${appointment.patient.firstName} ${appointment.patient.lastName}` : 'N/A'}</strong><br>
+                        <small class="text-muted">${appointment.patient ? appointment.patient.email : 'N/A'}</small>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <strong>${appointment.provider ? `${appointment.provider.firstName} ${appointment.provider.lastName}` : 'N/A'}</strong><br>
+                        <small class="text-muted">${appointment.provider ? (appointment.provider.specialization || '') : 'N/A'}</small>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <strong>${appointment.service ? appointment.service.name : 'N/A'}</strong><br>
+                        <small class="text-muted">${appointment.service ? (appointment.service.category || '') : 'N/A'}</small>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <strong>${formatDate(appointment.date)}</strong><br>
+                        <small class="text-muted">${appointment.startTime || 'N/A'}</small>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-${getStatusClass(appointment.status)}">${getStatusText(appointment.status)}</span>
+                </td>
+                <td><strong>$${appointment.amount || '0.00'}</strong></td>
+                <td>${formatDate(appointment.createdAt)}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="viewAppointment('${appointment._id || ''}')"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-sm btn-warning" onclick="editAppointment('${appointment._id || ''}')"><i class="fas fa-edit"></i></button>
+                    ${appointment.status === 'pending' ? `
+                        <button class="btn btn-sm btn-success" onclick="confirmAppointment('${appointment._id || ''}')"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${appointment._id || ''}')"><i class="fas fa-times"></i></button>
+                    ` : ''}
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function formatDate(date) {
+            try { return new Date(date).toLocaleDateString(); } catch { return 'N/A'; }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'confirmed': return 'success';
+                case 'pending': return 'warning';
+                case 'cancelled': return 'danger';
+                case 'completed': return 'info';
+                default: return 'secondary';
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'confirmed': return 'Confirmed';
+                case 'pending': return 'Pending';
+                case 'cancelled': return 'Cancelled';
+                case 'completed': return 'Completed';
+                default: return 'Unknown';
+            }
+        }
+
+        function exportAppointments() { }
+        function createAppointment() { }
+        function viewAppointment(id) { }
+        function editAppointment(id) { }
+        function confirmAppointment(id) { }
+        function cancelAppointment(id) { }
+    </script>

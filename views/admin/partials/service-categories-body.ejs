@@ -1,0 +1,94 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-primary"><i class="fas fa-tags mr-2"></i>Service Categories</h1>
+            <div class="text-muted small">Manage all service categories in one place</div>
+        </div>
+        <a href="/admin/services/categories/create" class="btn btn-success btn-lg px-4 shadow-sm"><i
+                class="fas fa-plus mr-1"></i> Add New Category</a>
+    </div>
+    <div id="alertContainer"></div>
+    <div class="card shadow-sm mb-4 border-0">
+        <div
+            class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between border-bottom-0">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list me-2"></i>Category Management</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle mb-0" id="categoriesTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 22%">Name</th>
+                            <th>Description</th>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 220px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% categories.forEach(function(category) { %>
+                            <tr>
+                                <td class="align-middle font-weight-bold">
+                                    <%= category.name %>
+                                </td>
+                                <td class="align-middle">
+                                    <%= category.description || '' %>
+                                </td>
+                                <td class="align-middle">
+                                    <% if (category.isActive) { %>
+                                        <span class="badge badge-success px-3 py-2">Active</span>
+                                        <% } else { %>
+                                            <span class="badge badge-secondary px-3 py-2">Inactive</span>
+                                            <% } %>
+                                </td>
+                                <td class="align-middle">
+                                    <div class="btn-group" role="group">
+                                        <a href="/admin/services/categories/<%= category._id %>/edit"
+                                            class="btn btn-outline-primary btn-sm" title="Edit"><i
+                                                class="fas fa-edit"></i></a>
+                                        <button class="btn btn-outline-danger btn-sm" title="Delete"
+                                            onclick="deleteCategory('<%= category._id %>')"><i
+                                                class="fas fa-trash-alt"></i></button>
+                                        <% if (category.isActive) { %>
+                                            <button class="btn btn-outline-warning btn-sm" title="Deactivate"
+                                                onclick="toggleCategoryStatus('<%= category._id %>', false)"><i
+                                                    class="fas fa-ban"></i></button>
+                                            <% } else { %>
+                                                <button class="btn btn-outline-success btn-sm" title="Activate"
+                                                    onclick="toggleCategoryStatus('<%= category._id %>', true)"><i
+                                                        class="fas fa-check"></i></button>
+                                                <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% if (!categories.length) { %>
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No service categories found.</td>
+                                    </tr>
+                                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleCategoryStatus(categoryId, makeActive) {
+            if (!categoryId) return;
+            const action = makeActive ? 'activate' : 'deactivate';
+            if (!confirm(`Are you sure you want to ${action} this category?`)) return;
+            fetch(`/admin/services/categories/${categoryId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isActive: makeActive })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Failed to update status');
+                    }
+                })
+                .catch(() => alert('Failed to update status'));
+        }
+    </script>

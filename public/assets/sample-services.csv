@@ -1,0 +1,4 @@
+name,category,duration,price,currency,description,shortDescription,isVirtual
+General Consultation,Doctor Chamber,30,10,USD,Standard general consultation,Short consult,false
+Dental Cleaning,Dental Care,45,25,USD,Teeth cleaning service,Dental clean,false
+Online Follow-up,Doctor Chamber,15,5,USD,Short online follow-up,Follow-up,true

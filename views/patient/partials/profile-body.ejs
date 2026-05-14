@@ -1,0 +1,200 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">My Profile</h1>
+    <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="editProfileBtn">
+        <i class="fas fa-edit fa-sm text-white-50"></i> Edit Profile
+    </button>
+</div>
+
+<!-- Profile Information -->
+<div class="row">
+    <!-- Profile Overview -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Profile Overview</h6>
+            </div>
+            <div class="card-body text-center">
+                <img class="img-profile rounded-circle mb-3" src="/uploads/avatar-fallback.svg" alt="Profile Picture"
+                    style="width: 120px; height: 120px;">
+                <h5 class="font-weight-bold text-gray-800">
+                    <%= user ? (user.firstName + ' ' + user.lastName) : 'Patient' %>
+                </h5>
+                <p class="text-muted">
+                    <%= user && user.email ? user.email : '' %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Personal Information</h6>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" class="form-control" id="firstName"
+                                    value="<%= user ? user.firstName : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" class="form-control" id="lastName"
+                                    value="<%= user ? user.lastName : '' %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email"
+                                    value="<%= user ? user.email : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" class="form-control" id="phone"
+                                    value="<%= user && user.phone ? user.phone : '' %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob"
+                                    value="<%= user && user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().substring(0,10) : '' %>"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" class="form-control" disabled>
+                                    <option value="">Select</option>
+                                    <option value="male" <%=user && user.gender==='male' ? 'selected' : '' %>>Male
+                                    </option>
+                                    <option value="female" <%=user && user.gender==='female' ? 'selected' : '' %>>Female
+                                    </option>
+                                    <option value="other" <%=user && user.gender==='other' ? 'selected' : '' %>>Other
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="street">Street</label>
+                                <input type="text" class="form-control" id="street"
+                                    value="<%= user && user.address ? (user.address.street || '') : '' %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city"
+                                    value="<%= user && user.address ? (user.address.city || '') : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state"
+                                    value="<%= user && user.address ? (user.address.state || '') : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="zip">ZIP</label>
+                                <input type="text" class="form-control" id="zip"
+                                    value="<%= user && user.address ? (user.address.zipCode || '') : '' %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group d-none" id="editButtons">
+                        <button type="button" class="btn btn-primary" id="saveProfileBtn">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" id="cancelEditBtn">
+                            <i class="fas fa-times mr-2"></i>Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editBtn = document.getElementById('editProfileBtn');
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        const saveBtn = document.getElementById('saveProfileBtn');
+        const form = document.getElementById('profileForm');
+        const inputs = form.querySelectorAll('input, textarea, select');
+
+        editBtn.addEventListener('click', () => {
+            inputs.forEach(el => {
+                if (el.id !== 'email') {
+                    el.readOnly = false;
+                    el.disabled = false;
+                }
+            });
+            document.getElementById('editButtons').classList.remove('d-none');
+            editBtn.classList.add('d-none');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            window.location.reload();
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const payload = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                dateOfBirth: document.getElementById('dob').value || undefined,
+                gender: document.getElementById('gender').value || undefined,
+                address: {
+                    street: document.getElementById('street').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    zipCode: document.getElementById('zip').value,
+                }
+            };
+
+            try {
+                const res = await fetch('/api/patient/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    alert('Profile updated successfully');
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Failed to update profile');
+                }
+            } catch (e) {
+                alert('Error updating profile');
+            }
+        });
+    });
+</script>

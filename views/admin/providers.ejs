@@ -1,0 +1,247 @@
+<%- include('../layouts/sb-admin', { title: 'Manage Providers' , currentPage: 'providers' , body:
+    include('./partials/providers-body', { providers: typeof providers !=='undefined' ? providers : [] }) }) %>
+
+    <script>
+        let providersData = [];
+
+        // Optional server-side data fallback
+        <% if (typeof providers !== 'undefined') { %>
+            window.serverProvidersData = <%- JSON.stringify(providers) %>;
+        <% } %>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                providersData = <%- (typeof providers !== 'undefined' ? JSON.stringify(providers) : '[]') %>;
+                updateProviderStats();
+                populateProvidersTable();
+                setupProviderEvents();
+                setupCsvImport();
+            });
+
+        function updateProviderStats() {
+            const total = providersData.length;
+            const verified = providersData.filter(p => (p.verificationStatus || '').toLowerCase() === 'approved' || (p.isVerified === true)).length;
+            const pending = providersData.filter(p => (p.verificationStatus || '').toLowerCase() === 'pending').length;
+            const now = new Date();
+            const newThisMonth = providersData.filter(p => {
+                const created = new Date(p.createdAt);
+                return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+            }).length;
+
+            document.getElementById('totalProviders').textContent = total;
+            document.getElementById('verifiedProviders').textContent = verified;
+            document.getElementById('pendingProviders').textContent = pending;
+            document.getElementById('newProvidersThisMonth').textContent = newThisMonth;
+        }
+
+        function getStatusBadge(status, isVerified) {
+            const s = (status || '').toLowerCase();
+            if (isVerified === true || s === 'approved' || s === 'verified') return 'success';
+            if (s === 'pending') return 'warning';
+            if (s === 'rejected') return 'danger';
+            return 'secondary';
+        }
+
+        function populateProvidersTable() {
+            const tbody = document.getElementById('providersTableBody');
+            tbody.innerHTML = '';
+
+            providersData.forEach(provider => {
+                const row = document.createElement('tr');
+                const fullName = `${provider.professionalTitle ? provider.professionalTitle + ' ' : ''}${provider.firstName || ''} ${provider.lastName || ''}`.trim();
+                const status = provider.verificationStatus || (provider.isVerified ? 'approved' : 'pending');
+                row.innerHTML = `
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar mr-3">
+                                <img src="${provider.profileImage || '/uploads/avatar-fallback.svg'}" alt="Avatar" class="rounded-circle" width="40" height="40" onerror="this.onerror=null;this.src='/uploads/avatar-fallback.svg'">
+                            </div>
+                            <div>
+                                <div class="font-weight-bold">${fullName}</div>
+                                <small class="text-muted">ID: ${provider._id}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${provider.specialization || 'N/A'}</td>
+                    <td>${provider.email || 'N/A'}</td>
+                    <td>${provider.phone || 'N/A'}</td>
+                    <td>${provider.licenseNumber || 'N/A'}</td>
+                    <td><span class="badge badge-${getStatusBadge(status, provider.isVerified)} text-capitalize">${status}</span></td>
+                    <td>${provider.createdAt ? new Date(provider.createdAt).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewProvider('${provider._id}')" title="View"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="editProvider('${provider._id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function setupProviderEvents() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const specializationFilter = document.getElementById('specializationFilter');
+            const exportBtn = document.getElementById('exportBtn');
+            if (searchInput) searchInput.addEventListener('keyup', function () {
+                const term = this.value.toLowerCase();
+                filterRows(row => row.textContent.toLowerCase().includes(term));
+            });
+            if (statusFilter) statusFilter.addEventListener('change', filterBy);
+            if (specializationFilter) specializationFilter.addEventListener('change', filterBy);
+            if (exportBtn) exportBtn.addEventListener('click', exportProviders);
+        }
+        function setupCsvImport() {
+            const uploadBtn = document.getElementById('uploadCsvBtn');
+            const input = document.getElementById('csvFile');
+            const result = document.getElementById('csvResult');
+            if (!uploadBtn || !input) return;
+            const setBusy = (busy) => {
+                uploadBtn.disabled = busy;
+                uploadBtn.textContent = busy ? 'Uploading…' : 'Upload';
+            };
+            input.addEventListener('change', () => { result.textContent = ''; result.className = 'small'; });
+            uploadBtn.addEventListener('click', async function () {
+                result.textContent = '';
+                result.className = 'small';
+                if (!input.files || input.files.length === 0) {
+                    result.textContent = 'Please choose a CSV file';
+                    result.className = 'text-danger';
+                    return;
+                }
+                const formData = new FormData();
+                formData.append('file', input.files[0]);
+                setBusy(true);
+                try {
+                    const res = await fetch('/admin/providers/import-csv', { method: 'POST', body: formData });
+                    let data;
+                    try { data = await res.json(); } catch (_) { data = { success: false, message: 'Invalid server response' }; }
+                    if (res.ok && data && data.success) {
+                        result.textContent = `Imported: ${data.created}, Skipped: ${data.skipped}`;
+                        result.className = 'text-success';
+                        setTimeout(() => { window.location.reload(); }, 900);
+                    } else {
+                        result.textContent = (data && data.message) ? data.message : `Upload failed (${res.status})`;
+                        result.className = 'text-danger';
+                    }
+                } catch (e) {
+                    result.textContent = 'Network error during upload';
+                    result.className = 'text-danger';
+                } finally {
+                    setBusy(false);
+                }
+            });
+        }
+
+        function filterBy() {
+            const status = (document.getElementById('statusFilter')?.value || '').toLowerCase();
+            const spec = (document.getElementById('specializationFilter')?.value || '').toLowerCase();
+            filterRows(row => {
+                const cells = row.querySelectorAll('td');
+                const specText = cells[1].innerText.toLowerCase();
+                const statusText = cells[5].innerText.toLowerCase();
+                const okStatus = status ? statusText.includes(status) : true;
+                const okSpec = spec ? specText.includes(spec) : true;
+                return okStatus && okSpec;
+            });
+        }
+
+        function filterRows(predicate) {
+            document.querySelectorAll('#providersTableBody tr').forEach(tr => {
+                tr.style.display = predicate(tr) ? '' : 'none';
+            });
+        }
+
+        function exportProviders() {
+            const headers = ['Name', 'Specialization', 'Email', 'Phone', 'License', 'Verification', 'Registration Date'];
+            const rows = providersData.map(p => [
+                `${p.professionalTitle ? p.professionalTitle + ' ' : ''}${p.firstName || ''} ${p.lastName || ''}`.trim(),
+                p.specialization || 'N/A',
+                p.email || 'N/A',
+                p.phone || 'N/A',
+                p.licenseNumber || 'N/A',
+                (p.verificationStatus || (p.isVerified ? 'approved' : 'pending')),
+                p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'
+            ]);
+            const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'providers.csv'; a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        async function viewProvider(id) {
+            try {
+                const found = providersData.find(x => x._id === id);
+                const p = found || (await (await fetch(`/admin/providers/${id}`, { credentials: 'include' })).json()).data;
+                if (!p) return;
+                const fullName = `${p.professionalTitle ? p.professionalTitle + ' ' : ''}${p.firstName || ''} ${p.lastName || ''}`.trim();
+                document.getElementById('vFullName').textContent = fullName || 'N/A';
+                document.getElementById('vEmail').textContent = p.email || 'N/A';
+                document.getElementById('vPhone').textContent = p.phone || 'N/A';
+                document.getElementById('vSpec').textContent = p.specialization || 'N/A';
+                document.getElementById('vLicense').textContent = p.licenseNumber || 'N/A';
+                document.getElementById('vStatus').textContent = (p.verificationStatus || (p.isVerified ? 'approved' : 'pending'));
+                document.getElementById('vCreatedAt').textContent = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A';
+                document.getElementById('vId').textContent = p._id || '';
+                $('#viewProviderModal').modal('show');
+            } catch (e) { console.error('viewProvider error', e); }
+        }
+
+        let editingProviderId = null;
+        async function editProvider(id) {
+            try {
+                editingProviderId = id;
+                const found = providersData.find(x => x._id === id);
+                const p = found || (await (await fetch(`/admin/providers/${id}`, { credentials: 'include' })).json()).data;
+                if (!p) return;
+                document.getElementById('eFirstName').value = p.firstName || '';
+                document.getElementById('eLastName').value = p.lastName || '';
+                document.getElementById('eEmail').value = p.email || '';
+                document.getElementById('ePhone').value = p.phone || '';
+                document.getElementById('eProfessionalTitle').value = p.professionalTitle || '';
+                document.getElementById('eSpecialization').value = p.specialization || '';
+                document.getElementById('eLicenseNumber').value = p.licenseNumber || '';
+                document.getElementById('eYearsOfExperience').value = p.yearsOfExperience || 0;
+                document.getElementById('eVerificationStatus').value = (p.verificationStatus || (p.isVerified ? 'approved' : 'pending'));
+                $('#editProviderModal').modal('show');
+            } catch (e) { console.error('editProvider error', e); }
+        }
+
+        document.addEventListener('click', async function (e) {
+            if (e.target && e.target.id === 'saveProviderBtn') {
+                if (!editingProviderId) return;
+                const payload = {
+                    firstName: document.getElementById('eFirstName').value.trim(),
+                    lastName: document.getElementById('eLastName').value.trim(),
+                    email: document.getElementById('eEmail').value.trim(),
+                    phone: document.getElementById('ePhone').value.trim(),
+                    professionalTitle: document.getElementById('eProfessionalTitle').value.trim(),
+                    specialization: document.getElementById('eSpecialization').value.trim(),
+                    licenseNumber: document.getElementById('eLicenseNumber').value.trim(),
+                    yearsOfExperience: Number(document.getElementById('eYearsOfExperience').value || 0),
+                    verificationStatus: document.getElementById('eVerificationStatus').value
+                };
+                try {
+                    const res = await fetch(`/admin/providers/${editingProviderId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (!res.ok || !data.success) throw new Error(data.message || 'Update failed');
+                    // Update local cache
+                    const idx = providersData.findIndex(p => p._id === editingProviderId);
+                    if (idx !== -1) providersData[idx] = data.data;
+                    $('#editProviderModal').modal('hide');
+                    populateProvidersTable();
+                    updateProviderStats();
+                } catch (err) {
+                    console.error('Save provider error', err);
+                    alert('Failed to save provider: ' + err.message);
+                }
+            }
+        });
+    </script>

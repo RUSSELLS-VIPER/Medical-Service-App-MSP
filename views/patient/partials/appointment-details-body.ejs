@@ -1,0 +1,104 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Appointment Details</h1>
+    <div>
+        <a href="/patient/appointments" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-calendar-alt"></i> Overview</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Date</strong>
+                        <div>
+                            <%= new Date(appointment.date).toLocaleDateString() %>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Time</strong>
+                        <div>
+                            <%= appointment.startTime %> - <%= appointment.endTime %>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Status</strong>
+                        <div>
+                            <span
+                                class="badge badge-<%= appointment.status === 'pending' ? 'warning' : appointment.status === 'confirmed' ? 'success' : appointment.status === 'completed' ? 'primary' : appointment.status === 'cancelled' ? 'danger' : appointment.status === 'no_show' ? 'secondary' : 'light' %>">
+                                <%= (appointment.status || '' ).replace('_', ' ' ).toUpperCase() %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <strong>Notes</strong>
+                        <div>
+                            <%= appointment.notes || 'No notes' %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-user-md"></i> Provider</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="ml-2">
+                        <div class="font-weight-bold">
+                            <%= appointment.providerInfo ? `${appointment.providerInfo.firstName}
+                                ${appointment.providerInfo.lastName}` : 'Provider' %>
+                        </div>
+                        <div class="text-muted">
+                            <%= appointment.providerInfo ? (appointment.providerInfo.professionalTitle || '' ) : '' %>
+                        </div>
+                        <div class="text-muted">
+                            <%= appointment.providerInfo ? appointment.providerInfo.email : '' %>
+                        </div>
+                        <div class="text-muted">
+                            <%= appointment.providerInfo ? appointment.providerInfo.phone : '' %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-stethoscope"></i> Service</h6>
+            </div>
+            <div class="card-body">
+                <div class="font-weight-bold">
+                    <%= appointment.serviceInfo ? appointment.serviceInfo.name : 'Appointment' %>
+                </div>
+                <div class="text-muted">
+                    <%= appointment.serviceInfo ? appointment.serviceInfo.description : '' %>
+                </div>
+                <div class="text-muted">Duration: <%= appointment.serviceInfo ? appointment.serviceInfo.duration :
+                        (appointment.duration || 60) %> min</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Patient actions for detail page
+    async function updateAppointmentStatusDetail(appointmentId, status, reason = '') {
+        try {
+            const response = await fetch(`/api/patient/appointments/${appointmentId}/status`, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status, cancellationReason: reason || undefined })
+            });
+            const data = await response.json();
+            if (data.success) { window.location.reload(); }
+            else { alert(data.message || 'Failed to update appointment'); }
+        } catch (_) { alert('An error occurred'); }
+    }
+</script>

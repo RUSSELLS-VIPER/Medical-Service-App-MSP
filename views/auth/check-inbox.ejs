@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= (typeof title !=='undefined' && title) ? title : 'Check Your Email' %>
+    </title>
+
+    <!-- Custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --secondary-color: #858796;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-color) !important;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            border-bottom: none;
+        }
+
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header text-white"
+                        style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                        <h5 class="mb-0"><i class="fas fa-envelope-open-text me-2"></i>Check Your Inbox</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Registration Successful</h4>
+                        <p class="text-muted text-center">
+                            <%= typeof message !=='undefined' && message ? message
+                                : 'We have sent a verification link to your email.' %>
+                        </p>
+                        <% if (typeof email !=='undefined' && email) { %>
+                            <p class="text-center"><strong>Sent to:</strong>
+                                <%= email %>
+                            </p>
+                            <% } %>
+
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    If you don't see the email within a few minutes, check your spam or junk folder.
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="<%= typeof redirectUrl !== 'undefined' && redirectUrl ? redirectUrl : '/login' %>"
+                                        class="btn btn-primary">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+                                    </a>
+                                    <a href="/verify-email" class="btn btn-outline-secondary">
+                                        <i class="fas fa-redo me-2"></i>Enter Verification Link Manually
+                                    </a>
+                                </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3 text-muted">
+                    <small>
+                        Didn’t get the email? <a href="/auth/patient/resend-verification" class="text-primary">Resend
+                            verification</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery + Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

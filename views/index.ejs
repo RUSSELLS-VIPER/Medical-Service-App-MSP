@@ -1,0 +1,195 @@
+<section class="relative min-h-screen">
+    <!-- Hero Background with Overlay -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-gradient-to-r from-white/90 to-white/50 md:from-white/80 md:to-transparent">
+        </div>
+        <img src="/assets/images/hero-bg.jpg" alt="Medical Professional"
+            class="w-full h-full object-cover object-center" onerror="console.error('Image failed to load:', this.src)">
+    </div>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
+        <div class="max-w-3xl">
+            <h1
+                class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 text-blue-700 leading-tight animate-fade-in">
+                WELCOME TO MEDILAB
+            </h1>
+            <p class="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-blue-700/90 max-w-2xl animate-fade-in-delay">
+                Your trusted healthcare companion. Empowering better health through innovative medical solutions.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 animate-fade-in-delay-2">
+                <a href="/services"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 rounded-full font-semibold transition duration-300 text-center">
+                    Our Services
+                </a>
+                <a href="/contact"
+                    class="bg-white hover:bg-gray-100 text-blue-900 px-6 sm:px-8 py-3 rounded-full font-semibold transition duration-300 text-center shadow-md">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce hidden md:block">
+        <i class="fas fa-chevron-down text-blue-600 text-2xl"></i>
+    </div>
+</section>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .animate-fade-in-delay {
+        animation: fadeIn 0.8s ease-out 0.3s forwards;
+        opacity: 0;
+    }
+
+    .animate-fade-in-delay-2 {
+        animation: fadeIn 0.8s ease-out 0.6s forwards;
+        opacity: 0;
+    }
+</style>
+
+<section id="about" class="py-16 px-4 md:px-8 lg:px-12">
+    <div class="container mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Image Column -->
+            <div class="order-2 lg:order-1">
+                <div class="relative rounded-xl overflow-hidden shadow-xl">
+                    <img src="/assets/images/about.jpg" alt="about"
+                        class="w-full h-full object-cover rounded-xl hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Content Column -->
+            <div class="order-1 lg:order-2">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-600 mb-6">About Us</h2>
+                <p class="text-gray-600 mb-8 text-lg">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora quis ut rerum corporis iure
+                    laudantium
+                    quos maxime facilis doloribus magni reprehenderit, non possimus totam quam culpa explicabo
+                    perferendis.
+                </p>
+
+                <!-- Features Grid -->
+                <div class="space-y-8">
+                    <!-- Feature 1 -->
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 p-3 bg-blue-50 rounded-full">
+                            <i class="fa-solid fa-vial-circle-check text-3xl text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-600 mb-2">Advanced Laboratory</h3>
+                            <p class="text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis
+                                fuga assumenda dolorum at
+                                consequuntur voluptatum odit dolor.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 p-3 bg-blue-50 rounded-full">
+                            <i class="fa-solid fa-pump-medical text-3xl text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-600 mb-2">Emergency Care</h3>
+                            <p class="text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis
+                                fuga assumenda dolorum at
+                                consequuntur voluptatum odit dolor.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 p-3 bg-blue-50 rounded-full">
+                            <i class="fa-solid fa-heart-circle-xmark text-3xl text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-600 mb-2">Expert Doctors</h3>
+                            <p class="text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis
+                                fuga assumenda dolorum at
+                                consequuntur voluptatum odit dolor.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Impact in Numbers</h2>
+            <p class="text-lg text-gray-600">Making a difference in healthcare, one patient at a time</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Doctors Stats -->
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                <div class="inline-block p-4 rounded-full bg-blue-50 mb-4">
+                    <i class="fa-solid fa-user-doctor text-4xl text-blue-600"></i>
+                </div>
+                <div class="stats-item">
+                    <span data-purecounter-start="0" data-purecounter-end="85" data-purecounter-duration="1"
+                        class="block text-4xl font-bold text-gray-900 mb-2 purecounter"></span>
+                    <p class="text-lg text-gray-600">Expert Doctors</p>
+                </div>
+            </div>
+
+            <!-- Patients Stats -->
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                <div class="inline-block p-4 rounded-full bg-green-50 mb-4">
+                    <i class="fa-solid fa-hospital-user text-4xl text-green-600"></i>
+                </div>
+                <div class="stats-item">
+                    <span data-purecounter-start="0" data-purecounter-end="12500" data-purecounter-duration="1"
+                        class="block text-4xl font-bold text-gray-900 mb-2 purecounter"></span>
+                    <p class="text-lg text-gray-600">Happy Patients</p>
+                </div>
+            </div>
+
+            <!-- Departments Stats -->
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                <div class="inline-block p-4 rounded-full bg-purple-50 mb-4">
+                    <i class="fa-solid fa-hospital text-4xl text-purple-600"></i>
+                </div>
+                <div class="stats-item">
+                    <span data-purecounter-start="0" data-purecounter-end="18" data-purecounter-duration="1"
+                        class="block text-4xl font-bold text-gray-900 mb-2 purecounter"></span>
+                    <p class="text-lg text-gray-600">Departments</p>
+                </div>
+            </div>
+
+            <!-- Research Stats -->
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                <div class="inline-block p-4 rounded-full bg-red-50 mb-4">
+                    <i class="fa-solid fa-flask text-4xl text-red-600"></i>
+                </div>
+                <div class="stats-item">
+                    <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1"
+                        class="block text-4xl font-bold text-gray-900 mb-2 purecounter"></span>
+                    <p class="text-lg text-gray-600">Research Papers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    
+</section>

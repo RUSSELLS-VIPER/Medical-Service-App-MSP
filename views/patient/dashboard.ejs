@@ -1,0 +1,8 @@
+<%- include('../layouts/sb-admin', { title: 'Patient Dashboard' , currentPage: 'dashboard' , body:
+    include('./partials/dashboard-body', { appointmentsCount: typeof appointmentsCount !=='undefined' ?
+    appointmentsCount : undefined, upcomingAppointments: typeof upcomingAppointments !=='undefined' ?
+    upcomingAppointments : undefined, completedAppointments: typeof completedAppointments !=='undefined' ?
+    completedAppointments : undefined, doctorsConsulted: typeof doctorsConsulted !=='undefined' ? doctorsConsulted :
+    undefined, appointments: typeof appointments !=='undefined' ? appointments : undefined, recentAppointments: typeof
+    recentAppointments !=='undefined' ? recentAppointments : undefined, patientName: typeof patientName !=='undefined' ?
+    patientName : (typeof user !=='undefined' && user.name ? user.name : undefined) }) }) %>

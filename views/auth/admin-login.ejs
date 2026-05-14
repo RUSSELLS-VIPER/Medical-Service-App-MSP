@@ -1,0 +1,68 @@
+<section class="py-5" style="margin-top: 90px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-10 col-md-8 col-lg-6">
+                <div class="card shadow-sm rounded-4 overflow-hidden">
+                    <div class="p-4 text-center">
+                        <h2 class="h4 mb-1">Admin Login</h2>
+                        <p class="text-muted mb-0">Access admin dashboard</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="errorMessage" class="alert alert-danger d-none"></div>
+                        <form id="adminLoginForm">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" required
+                                    value="admin@msp.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" required value="admin@msp.com">
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100">Login as Admin</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p class="text-muted mb-0">Need admin access? <a href="/register/admin">Register here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('errorMessage');
+
+        try {
+            const res = await fetch('/auth/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userRole', 'admin');
+                window.location.href = '/admin/dashboard';
+            } else {
+                errorDiv.textContent = data.message || 'Login failed. Please check your credentials.';
+                errorDiv.classList.remove('d-none');
+            }
+        } catch (err) {
+            errorDiv.textContent = 'An error occurred during login. Please try again.';
+            errorDiv.classList.remove('d-none');
+        }
+    });
+</script>

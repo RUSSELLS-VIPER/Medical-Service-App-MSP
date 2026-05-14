@@ -1,0 +1,5 @@
+<%- include('../layouts/sb-admin', { title: 'Admin Dashboard' , currentPage: 'dashboard' , body:
+    include('./partials/dashboard-body', { totalUsers: typeof totalUsers !=='undefined' ? totalUsers : undefined,
+    totalAppointments: typeof totalAppointments !=='undefined' ? totalAppointments : undefined, totalServices: typeof
+    totalServices !=='undefined' ? totalServices : undefined, totalRevenue: typeof totalRevenue !=='undefined' ?
+    totalRevenue : undefined, recentPatients: typeof recentPatients !=='undefined' ? recentPatients : [] }) }) %>

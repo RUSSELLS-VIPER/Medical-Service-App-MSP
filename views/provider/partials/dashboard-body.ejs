@@ -1,0 +1,304 @@
+<!-- Modern Provider Dashboard Styles -->
+<link rel="stylesheet" href="/css/provider-dashboard.css">
+
+<!-- Dashboard Header with Avatar -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+    <div class="d-flex align-items-center mb-2 mb-md-0">
+        <img src="/uploads/avatar-fallback.svg" alt="Avatar" class="rounded-circle mr-3"
+            style="width:56px;height:56px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Welcome, <span class="text-primary">
+                    <%= user && user.name ? user.name : 'Provider' %>
+                </span></h1>
+            <div class="text-muted small">Your practice at a glance</div>
+        </div>
+    </div>
+    <span class="badge badge-info px-3 py-2">
+        <%= (stats && stats.verificationStatus) ? (stats.verificationStatus.charAt(0).toUpperCase() +
+            stats.verificationStatus.slice(1)) : 'Pending' %> Verification
+    </span>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Appointments</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= (stats && stats.totalAppointments) || 0 %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Today's Appointments
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= (stats && stats.todayAppointments) || 0 %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Services</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= (stats && stats.totalServices) || 0 %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-stethoscope fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Monthly Revenue</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$<%= (stats && stats.monthlyRevenue) || 0 %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Shortcuts</h6>
+                <small class="text-muted">Quick access</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a href="/provider/appointments" class="btn btn-primary btn-block py-3 shadow-sm">
+                            <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                            <br>
+                            Appointments
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a href="/provider/service-management" class="btn btn-info btn-block py-3 shadow-sm">
+                            <i class="fas fa-stethoscope fa-2x mb-2"></i>
+                            <br>
+                            Services
+                        </a>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Account Status</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3 text-center">
+                        <div class="icon-circle bg-info mb-2"><i class="fas fa-user-check text-white"></i></div>
+                        <div class="small text-gray-600">Verification</div>
+                        <div class="text-info font-weight-bold">
+                            <%= (stats && stats.verificationStatus) ? (stats.verificationStatus.charAt(0).toUpperCase()
+                                + stats.verificationStatus.slice(1)) : 'Pending' %>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3 text-center">
+                        <div class="icon-circle bg-success mb-2"><i class="fas fa-stethoscope text-white"></i></div>
+                        <div class="small text-gray-600">Services</div>
+                        <div class="text-success font-weight-bold">
+                            <%= (stats && stats.totalServices) || 0 %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Location and Practice Information -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-map-marker-alt me-2"></i>Practice Location
+                </h6>
+                <a href="/provider/profile" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-edit me-1"></i>Edit
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (user && user.location) { %>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong class="text-gray-800">Practice Name:</strong>
+                                <div class="text-gray-600">
+                                    <%= user.practiceInfo && user.practiceInfo.practiceName ?
+                                        user.practiceInfo.practiceName : 'Not specified' %>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <strong class="text-gray-800">Practice Type:</strong>
+                                <div class="text-gray-600">
+                                    <%= user.practiceInfo && user.practiceInfo.practiceType ?
+                                        user.practiceInfo.practiceType.replace('_', ' ' ).replace(/\b\w/g, l=>
+                                        l.toUpperCase()) : 'Private Practice' %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong class="text-gray-800">Address:</strong>
+                                <div class="text-gray-600">
+                                    <% if (user.location.address) { %>
+                                        <%= user.location.address %><br>
+                                            <% } %>
+                                                <% if (user.location.city || user.location.state) { %>
+                                                    <%= user.location.city %>
+                                                        <%= user.location.city && user.location.state ? ', ' : '' %>
+                                                            <%= user.location.state %>
+                                                                <% } %>
+                                                                    <% if (user.location.zipCode) { %>
+                                                                        <%= user.location.zipCode %>
+                                                                            <% } %>
+                                                                                <% if (!user.location.address &&
+                                                                                    !user.location.city &&
+                                                                                    !user.location.state) { %>
+                                                                                    <span class="text-muted">Location
+                                                                                        not specified</span>
+                                                                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% if (user.practiceInfo && (user.practiceInfo.languages || user.practiceInfo.acceptsInsurance)) {
+                        %>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <% if (user.practiceInfo.languages && user.practiceInfo.languages.length> 0) { %>
+                                    <div class="mb-3">
+                                        <strong class="text-gray-800">Languages:</strong>
+                                        <div class="text-gray-600">
+                                            <% user.practiceInfo.languages.forEach((lang, index)=> { %>
+                                                <span class="badge badge-info me-1">
+                                                    <%= lang %>
+                                                </span>
+                                                <% }); %>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                            </div>
+                            <div class="col-md-6">
+                                <% if (user.practiceInfo.acceptsInsurance) { %>
+                                    <div class="mb-3">
+                                        <strong class="text-gray-800">Insurance:</strong>
+                                        <div class="text-gray-600">
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check me-1"></i>Accepts Insurance
+                                            </span>
+                                            <% if (user.practiceInfo.insuranceProviders &&
+                                                user.practiceInfo.insuranceProviders.length> 0) { %>
+                                                <div class="mt-2">
+                                                    <% user.practiceInfo.insuranceProviders.forEach((provider, index)=>
+                                                        { %>
+                                                        <span class="badge badge-light me-1">
+                                                            <%= provider %>
+                                                        </span>
+                                                        <% }); %>
+                                                </div>
+                                                <% } %>
+                                        </div>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="mb-3">
+                                            <strong class="text-gray-800">Insurance:</strong>
+                                            <div class="text-gray-600">
+                                                <span class="badge badge-warning">
+                                                    <i class="fas fa-times me-1"></i>Does not accept insurance
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                            </div>
+                        </div>
+                        <% } %>
+                            <% } else { %>
+                                <div class="text-center py-4">
+                                    <i class="fas fa-map-marker-alt fa-3x text-gray-300 mb-3"></i>
+                                    <h5 class="text-gray-600">No Location Information</h5>
+                                    <p class="text-gray-500">Add your practice location to help patients find you
+                                        easily.</p>
+                                    <a href="/provider/profile" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>Add Location
+                                    </a>
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-line me-2"></i>Quick Stats
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="icon-circle bg-warning mb-2"><i class="fas fa-star text-white"></i></div>
+                        <div class="small text-gray-600">Rating</div>
+                        <div class="text-warning font-weight-bold">
+                            <%= (stats && stats.averageRating && !isNaN(parseFloat(stats.averageRating))) ?
+                                parseFloat(stats.averageRating).toFixed(1) : 'N/A' %>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="icon-circle bg-info mb-2"><i class="fas fa-comments text-white"></i></div>
+                        <div class="small text-gray-600">Reviews</div>
+                        <div class="text-info font-weight-bold">
+                            <%= (stats && stats.totalReviews) || 0 %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

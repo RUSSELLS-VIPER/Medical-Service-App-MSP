@@ -1,0 +1,162 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Provider Profile</h1>
+    <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="editProfileBtn">
+        <i class="fas fa-edit fa-sm text-white-50"></i> Edit Profile
+    </button>
+</div>
+
+<!-- Profile Information -->
+<div class="row">
+    <!-- Profile Overview -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Profile Overview</h6>
+            </div>
+            <div class="card-body text-center">
+                <img class="img-profile rounded-circle mb-3" src="/uploads/avatar-fallback.svg" alt="Profile Picture"
+                    style="width: 120px; height: 120px;">
+                <h5 class="font-weight-bold text-gray-800">
+                    <%= user ? (user.professionalTitle ? user.professionalTitle + ' ' : '' ) + user.firstName + ' ' +
+                        user.lastName : 'Provider' %>
+                </h5>
+                <p class="text-muted">
+                    <%= user && user.specialization ? user.specialization : 'Specialization' %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Personal Information</h6>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" class="form-control" id="firstName"
+                                    value="<%= user ? user.firstName : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" class="form-control" id="lastName"
+                                    value="<%= user ? user.lastName : '' %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email"
+                                    value="<%= user ? user.email : '' %>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" class="form-control" id="phone"
+                                    value="<%= user && user.phone ? user.phone : '' %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="specialization">Specialization</label>
+                        <input type="text" class="form-control" id="specialization"
+                            value="<%= user && user.specialization ? user.specialization : '' %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="licenseNumber">Medical License Number</label>
+                        <input type="text" class="form-control" id="licenseNumber"
+                            value="<%= user && user.licenseNumber ? user.licenseNumber : '' %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Years of Experience</label>
+                        <input type="number" class="form-control" id="experience"
+                            value="<%= user && user.yearsOfExperience ? user.yearsOfExperience : '' %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea class="form-control" id="bio" rows="4"
+                            readonly><%= user && user.bio ? user.bio : '' %></textarea>
+                    </div>
+                    <div class="form-group d-none" id="editButtons">
+                        <button type="button" class="btn btn-primary" id="saveProfileBtn">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" id="cancelEditBtn">
+                            <i class="fas fa-times mr-2"></i>Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editBtn = document.getElementById('editProfileBtn');
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        const saveBtn = document.getElementById('saveProfileBtn');
+        const form = document.getElementById('profileForm');
+        if (!form) return;
+
+        const inputs = form.querySelectorAll('input, textarea');
+
+        if (editBtn) {
+            editBtn.addEventListener('click', function () {
+                inputs.forEach(function (el) {
+                    el.readOnly = false;
+                });
+                document.getElementById('editButtons').classList.remove('d-none');
+                editBtn.classList.add('d-none');
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function () {
+                window.location.reload();
+            });
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async function () {
+                try {
+                    const payload = {
+                        firstName: document.getElementById('firstName')?.value,
+                        lastName: document.getElementById('lastName')?.value,
+                        phone: document.getElementById('phone')?.value,
+                        specialization: document.getElementById('specialization')?.value,
+                        licenseNumber: document.getElementById('licenseNumber')?.value,
+                        yearsOfExperience: document.getElementById('experience')?.value,
+                        bio: document.getElementById('bio')?.value
+                    };
+                    const res = await fetch('/api/provider/profile', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (data && data.success) {
+                        alert('Profile updated successfully!');
+                        window.location.reload();
+                    } else {
+                        alert((data && data.message) || 'Failed to update profile');
+                    }
+                } catch (e) {
+                    alert('Error updating profile');
+                }
+            });
+        }
+    });
+</script>

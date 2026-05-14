@@ -1,0 +1,307 @@
+<!-- Modern Patient Dashboard Styles -->
+<link rel="stylesheet" href="/css/patient-dashboard.css">
+<!-- Page Heading -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+    <div class="d-flex align-items-center mb-2 mb-md-0">
+        <img src="/uploads/avatar-fallback.svg" alt="Avatar" class="rounded-circle mr-3"
+            style="width:56px;height:56px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Welcome, <span class="text-primary">
+                    <%= typeof patientName !=='undefined' ? patientName : 'Patient' %>
+                </span></h1>
+            <div class="text-muted small">Your health at a glance</div>
+        </div>
+    </div>
+    <a href="/services" class="btn btn-primary px-4 py-2">
+        <i class="fas fa-calendar-plus mr-2"></i>
+        Book New Appointment
+    </a>
+</div>
+
+<!-- Stats Row -->
+<div class="row">
+    <!-- Total Appointments -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Appointments
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof appointmentsCount !=='undefined' ? appointmentsCount : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Appointments -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Upcoming Appointments
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof upcomingAppointments !=='undefined' ? upcomingAppointments : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completed Appointments -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Completed Appointments
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof completedAppointments !=='undefined' ? completedAppointments : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctors Consulted -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Doctors Consulted
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= typeof doctorsConsulted !=='undefined' ? doctorsConsulted : '0' %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-md fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Two Column Row -->
+<div class="row">
+    <!-- Recent Activity -->
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+            </div>
+            <div class="card-body">
+                <% if (typeof recentAppointments !=='undefined' && recentAppointments.length> 0) { %>
+                    <% recentAppointments.slice(0, 3).forEach(function(appointment) { %>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-circle bg-info mr-3">
+                                <i class="fas fa-calendar text-white"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="small text-gray-600">
+                                    <%= appointment.serviceName || 'Appointment' %>
+                                </div>
+                                <div class="text-gray-800">
+                                    Dr. <%= appointment.providerName || 'Provider' %>
+                                </div>
+                            </div>
+                            <span class="status-badge status-<%= appointment.status || 'scheduled' %>">
+                                <%= appointment.status ? appointment.status.charAt(0).toUpperCase() +
+                                    appointment.status.slice(1) : 'Scheduled' %>
+                            </span>
+                        </div>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-calendar fa-2x mb-2"></i>
+                                    <p>No recent appointments</p>
+                                    <a href="/services" class="btn btn-primary btn-sm">
+                                        Book Your First Appointment
+                                    </a>
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-calendar-check"></i> My Appointments
+                </h6>
+                <a href="/patient/appointments" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> View All
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (typeof appointments !=='undefined' && appointments.length> 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Provider</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% appointments.forEach(function(appointment) { %>
+                                    <tr>
+                                        <td>
+                                            <strong>
+                                                <%= appointment.serviceName || 'Appointment' %>
+                                            </strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <%= appointment.duration || 60 %> minutes
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <strong>Dr. <%= appointment.providerName || 'Provider' %></strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <%= appointment.providerInfo ? (appointment.providerInfo.specialization
+                                                    || 'Healthcare Provider' ) : 'Provider' %>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <%= new Date(appointment.date).toLocaleDateString() %>
+                                            </strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <%= appointment.startTime %> - <%= appointment.endTime %>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge badge-<%= appointment.status === 'pending' ? 'warning' : appointment.status === 'confirmed' ? 'success' : appointment.status === 'completed' ? 'info' : appointment.status === 'cancelled' ? 'danger' : appointment.status === 'no_show' ? 'secondary' : 'primary' %>">
+                                                <%= appointment.status ? appointment.status.charAt(0).toUpperCase() +
+                                                    appointment.status.slice(1).replace('_', ' ' ) : 'Scheduled' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-info"
+                                                    onclick="viewAppointmentDetails('<%= appointment._id %>')"
+                                                    title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <% if (appointment.status==='pending' ) { %>
+                                                    <button class="btn btn-success"
+                                                        onclick="confirmAppointment('<%= appointment._id %>')"
+                                                        title="Confirm">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button class="btn btn-warning"
+                                                        onclick="rescheduleAppointment('<%= appointment._id %>')"
+                                                        title="Reschedule">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger"
+                                                        onclick="cancelAppointment('<%= appointment._id %>')"
+                                                        title="Cancel">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                    <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar fa-3x mb-3"></i>
+                            <h5>No Appointments Yet</h5>
+                            <p>You haven't booked any appointments yet. Start by finding a healthcare provider.</p>
+                            <a href="/services" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Find Services
+                            </a>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Appointment action functions used by buttons
+    window.viewAppointmentDetails = function (appointmentId) {
+        window.location.href = `/patient/appointments/${appointmentId}`;
+    };
+    window.confirmAppointment = function (appointmentId) {
+        if (confirm('Are you sure you want to confirm this appointment?')) {
+            updateAppointmentStatus(appointmentId, 'confirmed');
+        }
+    };
+    window.rescheduleAppointment = function (appointmentId) {
+        if (confirm('Do you want to reschedule this appointment?')) {
+            window.location.href = `/patient/appointments/${appointmentId}/reschedule`;
+        }
+    };
+    window.cancelAppointment = function (appointmentId) {
+        const reason = prompt('Please provide a reason for cancellation:');
+        if (reason !== null) {
+            updateAppointmentStatus(appointmentId, 'cancelled', reason);
+        }
+    };
+    async function updateAppointmentStatus(appointmentId, status, reason = '') {
+        try {
+            const response = await fetch(`/api/patient/appointments/${appointmentId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: status, cancellationReason: reason || undefined })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showAlert(`Appointment ${status} successfully!`, 'success');
+                setTimeout(() => { window.location.reload(); }, 1500);
+            } else {
+                showAlert(data.message || `Failed to ${status} appointment`, 'danger');
+            }
+        } catch (error) {
+            console.error(`Error updating appointment status:`, error);
+            showAlert('An error occurred while updating the appointment', 'danger');
+        }
+    }
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+                                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => { alertDiv.remove(); }, 5000);
+    }
+</script>

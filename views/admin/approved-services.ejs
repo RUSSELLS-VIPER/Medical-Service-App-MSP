@@ -1,0 +1,517 @@
+<%- include('../layouts/sb-admin-fixed', { title: 'Approved Services' , breadcrumb: [ { text: 'Dashboard' ,
+    url: '/admin/dashboard' }, { text: 'Approved Services' , url: '/admin/approved-services' } ],
+    currentPage: 'services' , body: ` <style>
+    .service-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #28a745;
+    }
+
+    .service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .service-header {
+    display: flex;
+    justify-content-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    }
+
+    .service-title {
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.2rem;
+    }
+
+    .service-status {
+    background: #d4edda;
+    color: #155724;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    }
+
+    .service-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    }
+
+    .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 0.9rem;
+    }
+
+    .meta-icon {
+    color: #667eea;
+    width: 16px;
+    }
+
+    .service-description {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    }
+
+    .service-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    }
+
+    .btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    }
+
+    .filters-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+    }
+
+    .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    }
+
+    .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    }
+
+    .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    }
+
+    .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    }
+    </style>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-check-circle mr-2"></i>Approved Services</h1>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" onclick="exportServices()">
+                            <i class="fas fa-download mr-2"></i>Export
+                        </button>
+                        <button class="btn btn-primary" onclick="refreshServices()">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalServices">0</div>
+                        <div class="stat-label">Total Approved</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeServices">0</div>
+                        <div class="stat-label">Active Services</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalProviders">0</div>
+                        <div class="stat-label">Providers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCategories">0</div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-container">
+                    <h5 class="mb-3">Filters</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="categoryFilter" class="form-label">Category</label>
+                            <select class="form-select" id="categoryFilter">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="providerFilter" class="form-label">Provider</label>
+                            <select class="form-select" id="providerFilter">
+                                <option value="">All Providers</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchFilter" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="searchFilter" placeholder="Service name...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services List -->
+                <div id="servicesList">
+                    <!-- Services will be loaded here dynamically -->
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Services pagination" class="mt-4">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Details Modal (Bootstrap 4 markup to match layout assets) -->
+    <div class="modal fade" id="serviceDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Service Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body" id="serviceDetailsContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let servicesPerPage = 10;
+        let allServices = [];
+        let filteredServices = [];
+
+        // Load approved services
+        async function loadApprovedServices() {
+            try {
+                const response = await fetch('/admin/approved-services');
+                const data = await response.json();
+                allServices = data.services || [];
+                filteredServices = [...allServices];
+
+                updateStatistics();
+                loadFilters();
+                displayServices();
+                displayPagination();
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            document.getElementById('totalServices').textContent = allServices.length;
+            document.getElementById('activeServices').textContent = allServices.filter(s => s.isActive).length;
+
+            const uniqueProviders = new Set(allServices.map(s => s.provider._id)).size;
+            document.getElementById('totalProviders').textContent = uniqueProviders;
+
+            const uniqueCategories = new Set(allServices.map(s => s.category._id)).size;
+            document.getElementById('totalCategories').textContent = uniqueCategories;
+        }
+
+        // Load filter options
+        function loadFilters() {
+            const categories = [...new Set(allServices.map(s => s.category.name))];
+            const providers = [...new Set(allServices.map(s => `${s.provider.firstName} ${s.provider.lastName}`))];
+
+            populateFilter('categoryFilter', categories);
+            populateFilter('providerFilter', providers);
+        }
+
+        function populateFilter(filterId, options) {
+            const filter = document.getElementById(filterId);
+            const currentValue = filter.value;
+
+            filter.innerHTML = `<option value="">All ${filterId.replace('Filter', '')}</option>`;
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                filter.appendChild(optionElement);
+            });
+
+            filter.value = currentValue;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const providerFilter = document.getElementById('providerFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+            filteredServices = allServices.filter(service => {
+                const categoryMatch = !categoryFilter || service.category.name === categoryFilter;
+                const providerMatch = !providerFilter || `${service.provider.firstName} ${service.provider.lastName}` === providerFilter;
+                const statusMatch = !statusFilter ||
+                    (statusFilter === 'active' && service.isActive) ||
+                    (statusFilter === 'inactive' && !service.isActive);
+                const searchMatch = !searchFilter ||
+                    service.serviceName.toLowerCase().includes(searchFilter) ||
+                    service.description.toLowerCase().includes(searchFilter);
+
+                return categoryMatch && providerMatch && statusMatch && searchMatch;
+            });
+
+            currentPage = 1;
+            displayServices();
+            displayPagination();
+        }
+
+        // Display services
+        function displayServices() {
+            const startIndex = (currentPage - 1) * servicesPerPage;
+            const endIndex = startIndex + servicesPerPage;
+            const servicesToShow = filteredServices.slice(startIndex, endIndex);
+
+            const servicesList = document.getElementById('servicesList');
+            servicesList.innerHTML = '';
+
+            if (servicesToShow.length === 0) {
+                servicesList.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No services found</h5>
+                        <p class="text-muted">Try adjusting your filters or search criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            servicesToShow.forEach(service => {
+                const serviceCard = document.createElement('div');
+                serviceCard.className = 'service-card';
+                serviceCard.innerHTML = `
+                    <div class="service-header">
+                        <h5 class="service-title">${service.serviceName}</h5>
+                        <span class="service-status">${service.isActive ? 'Active' : 'Inactive'}</span>
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-user-md meta-icon"></i>
+                            <span>${service.provider.firstName} ${service.provider.lastName}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-tag meta-icon"></i>
+                            <span>${service.category.name}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-dollar-sign meta-icon"></i>
+                            <span>$${service.basePrice}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock meta-icon"></i>
+                            <span>${service.duration} min</span>
+                        </div>
+                    </div>
+                    <p class="service-description">${service.description || 'No description available'}</p>
+                    <div class="service-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewServiceDetails('${service._id}')">
+                            <i class="fas fa-eye me-1"></i>View Details
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="toggleServiceStatus('${service._id}', ${service.isActive})">
+                            <i class="fas fa-${service.isActive ? 'pause' : 'play'} me-1"></i>${service.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="viewProviderDetails('${service.provider._id}')">
+                            <i class="fas fa-user me-1"></i>Provider Info
+                        </button>
+                    </div>
+                `;
+                servicesList.appendChild(serviceCard);
+            });
+        }
+
+        // Display pagination
+        function displayPagination() {
+            const totalPages = Math.ceil(filteredServices.length / servicesPerPage);
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Previous button
+            paginationHTML += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>
+                </li>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                        </li>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            // Next button
+            paginationHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+                </li>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            if (page >= 1 && page <= Math.ceil(filteredServices.length / servicesPerPage)) {
+                currentPage = page;
+                displayServices();
+                displayPagination();
+            }
+        }
+
+        // View service details
+        async function viewServiceDetails(serviceId) {
+            try {
+                const response = await fetch(`/admin/services/${serviceId}`);
+                const service = await response.json();
+
+                document.getElementById('serviceDetailsContent').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Service Information</h6>
+                            <p><strong>Name:</strong> ${service.serviceName}</p>
+                            <p><strong>Description:</strong> ${service.description || 'N/A'}</p>
+                            <p><strong>Base Price:</strong> $${service.basePrice}</p>
+                            <p><strong>Duration:</strong> ${service.duration} minutes</p>
+                            <p><strong>Status:</strong> ${service.isActive ? 'Active' : 'Inactive'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Provider Information</h6>
+                            <p><strong>Name:</strong> ${service.provider.firstName} ${service.provider.lastName}</p>
+                            <p><strong>Title:</strong> ${service.provider.professionalTitle || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${service.provider.email}</p>
+                            <p><strong>Phone:</strong> ${service.provider.phone || 'N/A'}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>Category Information</h6>
+                            <p><strong>Category:</strong> ${service.category.name}</p>
+                            <p><strong>Category Description:</strong> ${service.category.description || 'N/A'}</p>
+                        </div>
+                    </div>
+                `;
+
+                $('#serviceDetailsModal').modal('show');
+            } catch (error) {
+                console.error('Error loading service details:', error);
+            }
+        }
+
+        // Toggle service status
+        async function toggleServiceStatus(serviceId, currentStatus) {
+            try {
+                const response = await fetch(`/admin/services/${serviceId}/toggle-status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ isActive: !currentStatus })
+                });
+
+                if (response.ok) {
+                    loadApprovedServices();
+                }
+            } catch (error) {
+                console.error('Error toggling service status:', error);
+            }
+        }
+
+        // View provider details
+        function viewProviderDetails(providerId) {
+            window.open(`/admin/providers/${providerId}`, '_blank');
+        }
+
+        // Export services
+        function exportServices() {
+            const csvContent = generateCSV(filteredServices);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'approved-services.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Generate CSV
+        function generateCSV(services) {
+            const headers = ['Service Name', 'Provider', 'Category', 'Price', 'Duration', 'Status', 'Description'];
+            const rows = services.map(service => [
+                service.serviceName,
+                `${service.provider.firstName} ${service.provider.lastName}`,
+                service.category.name,
+                service.basePrice,
+                service.duration,
+                service.isActive ? 'Active' : 'Inactive',
+                service.description || ''
+            ]);
+
+            return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        }
+
+        // Refresh services
+        function refreshServices() {
+            loadApprovedServices();
+        }
+
+        // Event listeners
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('providerFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        document.getElementById('searchFilter').addEventListener('input', applyFilters);
+
+        // Load services on page load
+        document.addEventListener('DOMContentLoaded', loadApprovedServices);
+    </script>
+    `
+    }) %>

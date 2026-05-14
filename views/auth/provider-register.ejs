@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Provider Registration</title>
+
+    <!-- Custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                        accent: '#5a67d8',
+                        light: '#f8f9fa',
+                        dark: '#2c3e50'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --secondary-color: #858796;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-color) !important;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .password-strength::before {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .password-strength.weak::before {
+            width: 25%;
+            background: #dc3545;
+        }
+
+        .password-strength.medium::before {
+            width: 50%;
+            background: #ffc107;
+        }
+
+        .password-strength.strong::before {
+            width: 75%;
+            background: #28a745;
+        }
+
+        .password-strength.very-strong::before {
+            width: 100%;
+            background: #20c997;
+        }
+
+        .service-category-card.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .selected-service-tag .remove-service {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <!-- Header Section -->
+        <div class="text-center mb-5">
+            <div class="card shadow mb-4">
+                <div class="card-body py-5">
+                    <i class="fas fa-user-md fa-3x text-primary mb-3"></i>
+                    <h1 class="h2 mb-2">Healthcare Provider Registration</h1>
+                    <p class="text-muted lead">Join our network of trusted healthcare professionals</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Registration Form -->
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form action="/auth/register/provider" method="POST" enctype="multipart/form-data"
+                    id="providerRegisterForm">
+                    <!-- Hidden input to track selected services count -->
+                    <input type="hidden" id="selectedServicesCount" name="selectedServicesCount" value="0">
+
+                    <!-- Personal Information Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white text-xl mr-4">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark">Personal Information</h3>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="firstName" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>First Name
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="firstName" name="firstName" placeholder="Enter your first name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>Last Name
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="lastName" name="lastName" placeholder="Enter your last name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-envelope me-2 text-primary"></i>Email Address
+                                    </label>
+                                    <input type="email"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="email" name="email" placeholder="your.email@example.com" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-phone me-2 text-primary"></i>Phone Number
+                                    </label>
+                                    <input type="tel"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="phone" name="phone" placeholder="+1 (555) 123-4567" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white text-xl mr-4">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark">Account Security</h3>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-lock me-2 text-primary"></i>Password
+                                    </label>
+                                    <div class="position-relative">
+                                        <input type="password"
+                                            class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                            id="password" name="password" placeholder="Create a strong password"
+                                            required minlength="8">
+                                        <button type="button"
+                                            class="position-absolute top-3 end-3 text-gray-500 hover:text-primary transition"
+                                            onclick="togglePassword('password')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="password-strength mt-2" id="passwordStrength"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="confirmPassword" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-lock me-2 text-primary"></i>Confirm Password
+                                    </label>
+                                    <div class="position-relative">
+                                        <input type="password"
+                                            class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                            id="confirmPassword" name="confirmPassword"
+                                            placeholder="Confirm your password" required>
+                                        <button type="button"
+                                            class="position-absolute top-3 end-3 text-gray-500 hover:text-primary transition"
+                                            onclick="togglePassword('confirmPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white text-xl mr-4">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark">Professional Information</h3>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="professionalTitle" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-user-md me-2 text-primary"></i>Professional Title
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="professionalTitle" name="professionalTitle"
+                                        placeholder="e.g., Dr., Nurse Practitioner, Specialist" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="specialization" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-heartbeat me-2 text-primary"></i>Specialization
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="specialization" name="specialization"
+                                        placeholder="e.g., Cardiology, Pediatrics, Internal Medicine" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="yearsOfExperience" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-clock me-2 text-primary"></i>Years of Experience
+                                    </label>
+                                    <input type="number"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="yearsOfExperience" name="yearsOfExperience" placeholder="0" min="0" max="50"
+                                        required>
+                                    <div class="form-text text-gray-500">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Enter your total years of professional experience
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="licenseNumber" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-id-card me-2 text-primary"></i>License Number
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="licenseNumber" name="licenseNumber"
+                                        placeholder="Enter your professional license number" required>
+                                    <div class="form-text text-gray-500">
+                                        <i class="fas fa-shield-alt me-1"></i>
+                                        Your license will be verified during the approval process
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Professional Information -->
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="additionalInfo" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-info-circle me-2 text-primary"></i>Additional Professional
+                                        Information
+                                    </label>
+                                    <textarea
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="additionalInfo" name="additionalInfo" rows="3"
+                                        placeholder="Tell us about your qualifications, certifications, or any additional information that would help patients understand your expertise..."></textarea>
+                                    <div class="form-text text-gray-500">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        Optional: Share additional qualifications, certifications, or specializations
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location & Practice Information Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white text-xl mr-4">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark">Location & Practice Information</h3>
+                        </div>
+
+                        <!-- Practice Information -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="practiceName" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-building me-2 text-primary"></i>Practice Name
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="practiceName" name="practiceName"
+                                        placeholder="e.g., Downtown Medical Center">
+                                    <div class="form-text text-gray-500">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Optional: Name of your medical practice or clinic
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="practiceType" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-hospital me-2 text-primary"></i>Practice Type
+                                    </label>
+                                    <select
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="practiceType" name="practiceType">
+                                        <option value="private">Private Practice</option>
+                                        <option value="hospital">Hospital</option>
+                                        <option value="clinic">Clinic</option>
+                                        <option value="group_practice">Group Practice</option>
+                                        <option value="telemedicine_only">Telemedicine Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Information -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="address" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>Practice Address
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="address" name="address" placeholder="Enter your practice address">
+                                    <div class="form-text text-gray-500">
+                                        <i class="fas fa-map-pin me-1"></i>
+                                        Street address of your practice location
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="city" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-city me-2 text-primary"></i>City
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="city" name="city" placeholder="Enter city">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="state" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-flag me-2 text-primary"></i>State
+                                    </label>
+                                    <select
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="state" name="state">
+                                        <option value="">Select State</option>
+                                        <option value="AL">Alabama</option>
+                                        <option value="AK">Alaska</option>
+                                        <option value="AZ">Arizona</option>
+                                        <option value="AR">Arkansas</option>
+                                        <option value="CA">California</option>
+                                        <option value="CO">Colorado</option>
+                                        <option value="CT">Connecticut</option>
+                                        <option value="DE">Delaware</option>
+                                        <option value="FL">Florida</option>
+                                        <option value="GA">Georgia</option>
+                                        <option value="HI">Hawaii</option>
+                                        <option value="ID">Idaho</option>
+                                        <option value="IL">Illinois</option>
+                                        <option value="IN">Indiana</option>
+                                        <option value="IA">Iowa</option>
+                                        <option value="KS">Kansas</option>
+                                        <option value="KY">Kentucky</option>
+                                        <option value="LA">Louisiana</option>
+                                        <option value="ME">Maine</option>
+                                        <option value="MD">Maryland</option>
+                                        <option value="MA">Massachusetts</option>
+                                        <option value="MI">Michigan</option>
+                                        <option value="MN">Minnesota</option>
+                                        <option value="MS">Mississippi</option>
+                                        <option value="MO">Missouri</option>
+                                        <option value="MT">Montana</option>
+                                        <option value="NE">Nebraska</option>
+                                        <option value="NV">Nevada</option>
+                                        <option value="NH">New Hampshire</option>
+                                        <option value="NJ">New Jersey</option>
+                                        <option value="NM">New Mexico</option>
+                                        <option value="NY">New York</option>
+                                        <option value="NC">North Carolina</option>
+                                        <option value="ND">North Dakota</option>
+                                        <option value="OH">Ohio</option>
+                                        <option value="OK">Oklahoma</option>
+                                        <option value="OR">Oregon</option>
+                                        <option value="PA">Pennsylvania</option>
+                                        <option value="RI">Rhode Island</option>
+                                        <option value="SC">South Carolina</option>
+                                        <option value="SD">South Dakota</option>
+                                        <option value="TN">Tennessee</option>
+                                        <option value="TX">Texas</option>
+                                        <option value="UT">Utah</option>
+                                        <option value="VT">Vermont</option>
+                                        <option value="VA">Virginia</option>
+                                        <option value="WA">Washington</option>
+                                        <option value="WV">West Virginia</option>
+                                        <option value="WI">Wisconsin</option>
+                                        <option value="WY">Wyoming</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="zipCode" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-mail-bulk me-2 text-primary"></i>ZIP Code
+                                    </label>
+                                    <input type="text"
+                                        class="form-control border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition"
+                                        id="zipCode" name="zipCode" placeholder="12345" pattern="[0-9]{5}(-[0-9]{4})?"
+                                        maxlength="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Practice Information -->
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-language me-2 text-primary"></i>Languages Spoken
+                                    </label>
+                                    <div class="border-2 border-gray-200 rounded-xl p-3 bg-gray-50">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="langEnglish"
+                                                name="languages" value="English" checked>
+                                            <label class="form-check-label" for="langEnglish">English</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="langSpanish"
+                                                name="languages" value="Spanish">
+                                            <label class="form-check-label" for="langSpanish">Spanish</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="langFrench"
+                                                name="languages" value="French">
+                                            <label class="form-check-label" for="langFrench">French</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="langMandarin"
+                                                name="languages" value="Mandarin">
+                                            <label class="form-check-label" for="langMandarin">Mandarin</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="langOther"
+                                                name="languages" value="Other">
+                                            <label class="form-check-label" for="langOther">Other</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-shield-alt me-2 text-primary"></i>Insurance Acceptance
+                                    </label>
+                                    <div class="border-2 border-gray-200 rounded-xl p-3 bg-gray-50">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="acceptsInsurance"
+                                                name="acceptsInsurance" value="true">
+                                            <label class="form-check-label" for="acceptsInsurance">I accept
+                                                insurance</label>
+                                        </div>
+                                        <div class="mt-3" id="insuranceProviders" style="display: none;">
+                                            <label class="form-label fw-semibold text-dark">Insurance Providers</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="insBlueCross"
+                                                    name="insuranceProviders" value="Blue Cross Blue Shield">
+                                                <label class="form-check-label" for="insBlueCross">Blue Cross Blue
+                                                    Shield</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="insAetna"
+                                                    name="insuranceProviders" value="Aetna">
+                                                <label class="form-check-label" for="insAetna">Aetna</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="insCigna"
+                                                    name="insuranceProviders" value="Cigna">
+                                                <label class="form-check-label" for="insCigna">Cigna</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="insUnitedHealth"
+                                                    name="insuranceProviders" value="UnitedHealthcare">
+                                                <label class="form-check-label"
+                                                    for="insUnitedHealth">UnitedHealthcare</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Map Preview -->
+                        <div class="mt-4">
+                            <div class="alert alert-info d-flex align-items-center" role="alert">
+                                <i class="fas fa-info-circle me-3"></i>
+                                <div>
+                                    <strong>Location Information:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Your location helps patients find you easily</li>
+                                        <li>You can update this information later in your profile</li>
+                                        <li>For telemedicine-only practices, location is optional</li>
+                                        <li>Location data is used for appointment scheduling and patient matching</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Selection Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white text-xl mr-4">
+                                <i class="fas fa-list-alt"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark">Services You Offer
+                                <span id="servicesCount" class="badge bg-primary ms-2" style="display: none;">0</span>
+                            </h3>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-2xl p-5">
+                            <div class="service-categories-wrapper">
+                                <div class="categories-loading text-center py-5" id="categoriesLoading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-3 text-gray-600">Loading available service categories...</p>
+                                </div>
+
+                                <div class="categories-container" id="categoriesContainer" style="display: none;">
+                                    <div class="row g-3" id="categoriesGrid">
+                                        <!-- Categories will be dynamically loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="selected-services-summary mt-5 bg-white rounded-xl p-5 border border-gray-200"
+                                id="selectedServicesSummary" style="display: none;">
+                                <div class="summary-header">
+                                    <h5 class="fw-semibold text-dark"><i
+                                            class="fas fa-check-circle me-2 text-success"></i>Selected Services</h5>
+                                    <p class="text-gray-600 mb-4">You have selected the following services to offer:</p>
+                                </div>
+                                <div class="selected-services-list d-flex flex-wrap gap-2" id="selectedServicesList">
+                                    <!-- Selected services will be displayed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Document Upload Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white text-xl mr-4">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark">Document Verification</h3>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-2xl p-5">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div
+                                        class="border-2 border-dashed border-primary rounded-2xl p-4 text-center bg-white transition hover:border-secondary hover:bg-gray-50">
+                                        <div class="upload-content">
+                                            <i class="fas fa-id-card text-3xl text-primary mb-3"></i>
+                                            <h6 class="fw-semibold text-dark">Professional License</h6>
+                                            <p class="text-gray-600 text-sm mb-3">Upload your valid professional license
+                                            </p>
+                                            <div class="file-input-wrapper position-relative d-inline-block">
+                                                <input type="file"
+                                                    class="position-absolute top-0 start-0 w-full h-full opacity-0 cursor-pointer"
+                                                    id="licenseDocument" name="licenseDocument"
+                                                    accept=".pdf,.jpg,.jpeg,.png" required>
+                                                <label for="licenseDocument"
+                                                    class="btn btn-primary btn-sm rounded-pill px-3 py-2 fw-semibold">
+                                                    <i class="fas fa-upload me-2"></i>Choose License
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div
+                                        class="border-2 border-dashed border-secondary rounded-2xl p-4 text-center bg-white transition hover:border-primary hover:bg-gray-50">
+                                        <div class="upload-content">
+                                            <i class="fas fa-certificate text-3xl text-secondary mb-3"></i>
+                                            <h6 class="fw-semibold text-dark">Additional Certifications</h6>
+                                            <p class="text-gray-600 text-sm mb-3">Upload other relevant certifications
+                                                (optional)</p>
+                                            <div class="file-input-wrapper position-relative d-inline-block">
+                                                <input type="file"
+                                                    class="position-absolute top-0 start-0 w-full h-full opacity-0 cursor-pointer"
+                                                    id="additionalDocuments" name="additionalDocuments" multiple
+                                                    accept=".pdf,.jpg,.jpeg,.png">
+                                                <label for="additionalDocuments"
+                                                    class="btn btn-secondary btn-sm rounded-pill px-3 py-2 fw-semibold">
+                                                    <i class="fas fa-plus me-2"></i>Add Certificates
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="alert alert-info d-flex align-items-center" role="alert">
+                                    <i class="fas fa-info-circle me-3"></i>
+                                    <div>
+                                        <strong>Document Requirements:</strong>
+                                        <ul class="mb-0 mt-2">
+                                            <li>Professional license is required for verification</li>
+                                            <li>Accepted formats: PDF, JPG, JPEG, PNG</li>
+                                            <li>Maximum file size: 5MB per file</li>
+                                            <li>Maximum 5 additional documents</li>
+                                            <li>Documents will be reviewed within 2-3 business days</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- File Preview Area -->
+                            <div id="filePreview" class="mt-4" style="display: none;">
+                                <h6 class="fw-semibold text-dark mb-3">
+                                    <i class="fas fa-file-alt me-2"></i>Selected Documents
+                                </h6>
+                                <div id="fileList" class="row g-2">
+                                    <!-- File previews will be shown here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="mb-8">
+                        <div class="bg-gray-50 rounded-2xl p-5">
+                            <div class="form-check">
+                                <input class="form-check-input me-3 mt-0" type="checkbox"
+                                    style="width: 1.2rem; height: 1.2rem;" id="terms" required>
+                                <label class="form-check-label text-dark fw-medium" for="terms">
+                                    I agree to the <a href="/terms"
+                                        class="text-primary hover:underline fw-semibold">Terms and Conditions</a> and
+                                    verify that all information provided is accurate and truthful.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="mb-6">
+                        <button type="submit"
+                            class="btn w-100 py-3 rounded-2xl fw-semibold text-lg bg-gradient-to-br from-primary to-secondary text-white border-0 shadow-md hover-shadow-lg transition"
+                            id="registerBtn">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <span class="btn-text">Register as Healthcare Provider</span>
+                            <div class="btn-loading d-none">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                <span>Processing...</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Login Links -->
+                    <div class="text-center">
+                        <div class="bg-gray-50 rounded-2xl p-4">
+                            <p class="mb-2 text-gray-700">
+                                <i class="fas fa-sign-in-alt me-2 text-primary"></i>
+                                Already have an account? <a href="/login"
+                                    class="text-primary hover:underline fw-semibold">Login here</a>
+                            </p>
+                            <p class="mb-0 text-gray-700">
+                                <i class="fas fa-user me-2 text-primary"></i>
+                                Registering as patient? <a href="/register/patient"
+                                    class="text-primary hover:underline fw-semibold">Patient registration</a>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery + Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript for enhanced functionality -->
+    <script>
+        // Password visibility toggle
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const toggle = input.parentElement.querySelector('button i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        }
+
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function () {
+            const password = this.value;
+            const strengthDiv = document.getElementById('passwordStrength');
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            strengthDiv.className = 'password-strength';
+            if (strength <= 2) strengthDiv.classList.add('weak');
+            else if (strength <= 3) strengthDiv.classList.add('medium');
+            else if (strength <= 4) strengthDiv.classList.add('strong');
+            else strengthDiv.classList.add('very-strong');
+        });
+
+        // Enhanced form validation and submission
+        document.getElementById('providerRegisterForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validate form
+            const validationResult = validateForm();
+            if (!validationResult.isValid) {
+                showFormErrors(validationResult.errors);
+                return;
+            }
+
+            // Show loading state
+            const btn = document.getElementById('registerBtn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+            btn.disabled = true;
+
+            // Submit form
+            this.submit();
+        });
+
+        function validateForm() {
+            const errors = [];
+
+            // Check required fields
+            const requiredFields = [
+                'firstName', 'lastName', 'email', 'phone', 'password', 'confirmPassword',
+                'professionalTitle', 'specialization', 'yearsOfExperience', 'licenseNumber'
+            ];
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    errors.push(`${getFieldLabel(fieldId)} is required`);
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                errors.push('Please enter a valid email address');
+            }
+
+            // Validate phone format
+            const phone = document.getElementById('phone').value;
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            if (phone && !phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+                errors.push('Please enter a valid phone number');
+            }
+
+            // Validate password match
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                errors.push('Passwords do not match');
+            }
+
+            // Validate password strength
+            if (password && password.length < 8) {
+                errors.push('Password must be at least 8 characters long');
+            }
+
+            // Validate years of experience
+            const yearsOfExperience = parseInt(document.getElementById('yearsOfExperience').value);
+            if (yearsOfExperience < 0 || yearsOfExperience > 50) {
+                errors.push('Years of experience must be between 0 and 50');
+            }
+
+            // Check if at least one service is selected
+            if (!serviceSelector || serviceSelector.selectedServices.size === 0) {
+                errors.push('Please select at least one service category');
+            }
+
+            // Check if license document is uploaded
+            const licenseDocument = document.getElementById('licenseDocument');
+            if (!licenseDocument.files || licenseDocument.files.length === 0) {
+                errors.push('Professional license document is required');
+            }
+
+            // Check terms acceptance
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                errors.push('You must accept the terms and conditions');
+            }
+
+            return {
+                isValid: errors.length === 0,
+                errors: errors
+            };
+        }
+
+        function getFieldLabel(fieldId) {
+            const labels = {
+                'firstName': 'First Name',
+                'lastName': 'Last Name',
+                'email': 'Email Address',
+                'phone': 'Phone Number',
+                'password': 'Password',
+                'confirmPassword': 'Confirm Password',
+                'professionalTitle': 'Professional Title',
+                'specialization': 'Specialization',
+                'yearsOfExperience': 'Years of Experience',
+                'licenseNumber': 'License Number'
+            };
+            return labels[fieldId] || fieldId;
+        }
+
+        function showFormErrors(errors) {
+            // Remove existing error messages
+            document.querySelectorAll('.form-error').forEach(error => error.remove());
+
+            // Show error alert
+            const errorAlert = document.createElement('div');
+            errorAlert.className = 'alert alert-danger mb-4';
+            errorAlert.innerHTML = `
+                <h6 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Please fix the following errors:
+                </h6>
+                <ul class="mb-0">
+                    ${errors.map(error => `<li>${error}</li>`).join('')}
+                </ul>
+            `;
+
+            // Insert error alert at the top of the form
+            const form = document.getElementById('providerRegisterForm');
+            form.insertBefore(errorAlert, form.firstChild);
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Reset button state
+            const btn = document.getElementById('registerBtn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            btnText.classList.remove('d-none');
+            btnLoading.classList.add('d-none');
+            btn.disabled = false;
+        }
+
+        // File input styling and validation
+        function setupFileInput(inputId, labelSelector, maxFiles = 1, maxSize = 5) {
+            const input = document.getElementById(inputId);
+            const label = document.querySelector(labelSelector);
+
+            input.addEventListener('change', function () {
+                const files = Array.from(this.files);
+                const validFiles = [];
+                const errors = [];
+
+                // Validate files
+                files.forEach((file, index) => {
+                    // Check file size (5MB limit)
+                    if (file.size > maxSize * 1024 * 1024) {
+                        errors.push(`${file.name}: File size exceeds ${maxSize}MB limit`);
+                        return;
+                    }
+
+                    // Check file type
+                    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                    if (!allowedTypes.includes(file.type)) {
+                        errors.push(`${file.name}: Invalid file type. Only PDF, JPG, JPEG, PNG are allowed`);
+                        return;
+                    }
+
+                    validFiles.push(file);
+                });
+
+                // Check file count limit
+                if (validFiles.length > maxFiles) {
+                    errors.push(`Maximum ${maxFiles} file(s) allowed`);
+                }
+
+                // Show errors if any
+                if (errors.length > 0) {
+                    alert('File Upload Errors:\n' + errors.join('\n'));
+                    this.value = ''; // Clear the input
+                    return;
+                }
+
+                // Update UI
+                if (validFiles.length > 0) {
+                    const icon = validFiles.length === 1 ? 'fa-check' : 'fa-check-double';
+                    label.innerHTML = `<i class="fas ${icon} me-2"></i>${validFiles.length} file(s) selected`;
+                    label.classList.remove('btn-primary', 'btn-secondary');
+                    label.classList.add('btn-success');
+
+                    // Show file preview
+                    showFilePreview(validFiles, inputId);
+                } else {
+                    const originalText = inputId === 'licenseDocument' ? 'Choose License' : 'Add Certificates';
+                    const originalIcon = inputId === 'licenseDocument' ? 'fa-upload' : 'fa-plus';
+                    label.innerHTML = `<i class="fas ${originalIcon} me-2"></i>${originalText}`;
+                    label.classList.remove('btn-success');
+                    label.classList.add(inputId === 'licenseDocument' ? 'btn-primary' : 'btn-secondary');
+
+                    // Hide file preview
+                    hideFilePreview(inputId);
+                }
+            });
+        }
+
+        // Setup file inputs
+        setupFileInput('licenseDocument', 'label[for="licenseDocument"]', 1, 5);
+        setupFileInput('additionalDocuments', 'label[for="additionalDocuments"]', 5, 5);
+
+        function showFilePreview(files, inputId) {
+            const previewDiv = document.getElementById('filePreview');
+            const fileListDiv = document.getElementById('fileList');
+
+            // Clear existing previews for this input
+            const existingPreviews = fileListDiv.querySelectorAll(`[data-input="${inputId}"]`);
+            existingPreviews.forEach(preview => preview.remove());
+
+            files.forEach((file, index) => {
+                const filePreview = document.createElement('div');
+                filePreview.className = 'col-md-6 col-lg-4';
+                filePreview.dataset.input = inputId;
+
+                const fileIcon = file.type === 'application/pdf' ? 'fa-file-pdf' : 'fa-file-image';
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+
+                filePreview.innerHTML = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-3 d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas ${fileIcon} text-primary fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold text-dark text-truncate" style="max-width: 150px;" title="${file.name}">
+                                ${file.name}
+                            </div>
+                            <small class="text-gray-500">${fileSize} MB</small>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="removeFile('${inputId}', ${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+
+                fileListDiv.appendChild(filePreview);
+            });
+
+            previewDiv.style.display = 'block';
+        }
+
+        function hideFilePreview(inputId) {
+            const fileListDiv = document.getElementById('fileList');
+            const existingPreviews = fileListDiv.querySelectorAll(`[data-input="${inputId}"]`);
+            existingPreviews.forEach(preview => preview.remove());
+
+            // Hide preview if no files are selected
+            if (fileListDiv.children.length === 0) {
+                document.getElementById('filePreview').style.display = 'none';
+            }
+        }
+
+        function removeFile(inputId, fileIndex) {
+            const input = document.getElementById(inputId);
+            const files = Array.from(input.files);
+            files.splice(fileIndex, 1);
+
+            // Create new FileList (this is a workaround since FileList is read-only)
+            const dt = new DataTransfer();
+            files.forEach(file => dt.items.add(file));
+            input.files = dt.files;
+
+            // Trigger change event to update UI
+            input.dispatchEvent(new Event('change'));
+        }
+
+        // Service Selection Functionality
+        class ServiceSelector {
+            constructor() {
+                this.selectedServices = new Set();
+                this.categories = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadServiceCategories();
+                this.setupEventListeners();
+            }
+
+            async loadServiceCategories() {
+                try {
+                    const response = await fetch('/api/services/categories');
+                    const data = await response.json();
+
+                    if (data.success && data.data) {
+                        this.categories = data.data;
+                        this.renderCategories();
+                    } else {
+                        this.showError('Failed to load service categories');
+                    }
+                } catch (error) {
+                    console.error('Error loading service categories:', error);
+                    this.showError('Failed to load service categories. Please refresh the page to try again.');
+                }
+            }
+
+            renderCategories() {
+                const loadingDiv = document.getElementById('categoriesLoading');
+                const containerDiv = document.getElementById('categoriesContainer');
+                const gridDiv = document.getElementById('categoriesGrid');
+
+                // Hide loading and show container
+                loadingDiv.style.display = 'none';
+                containerDiv.style.display = 'block';
+
+                // Clear existing content
+                gridDiv.innerHTML = '';
+
+                // Render each category
+                this.categories.forEach(category => {
+                    const categoryCard = this.createCategoryCard(category);
+                    gridDiv.appendChild(categoryCard);
+                });
+            }
+
+            createCategoryCard(category) {
+                const colDiv = document.createElement('div');
+                colDiv.className = 'col-md-4 col-sm-6';
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'bg-white border-2 border-gray-200 rounded-2xl p-4 cursor-pointer transition hover:border-primary hover:shadow-md position-relative';
+                cardDiv.dataset.categoryId = category._id;
+                cardDiv.dataset.categoryName = category.name;
+
+                // Use category color if available, otherwise use default
+                const cardColor = category.color || '#667eea';
+                const iconClass = category.icon ? (category.icon.startsWith('fa-') ? `fas ${category.icon}` : `fas fa-${category.icon}`) : 'fas fa-user-md';
+
+                cardDiv.innerHTML = `
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl mx-auto mb-3" style="background: ${cardColor};">
+                        <i class="${iconClass}"></i>
+                    </div>
+                    <div class="text-lg font-semibold text-dark text-center mb-2">${category.name}</div>
+                    <div class="text-gray-600 text-center text-sm">${category.shortDescription || category.description || ''}</div>
+                    ${category.requirements && category.requirements.length > 0 ? `
+                        <div class="mt-3">
+                            <small class="text-primary fw-semibold">Requirements:</small>
+                            <ul class="list-unstyled mt-1">
+                                ${category.requirements.slice(0, 2).map(req => `<li class="text-xs text-gray-500">• ${req}</li>`).join('')}
+                                ${category.requirements.length > 2 ? `<li class="text-xs text-gray-500">• +${category.requirements.length - 2} more</li>` : ''}
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+
+                cardDiv.addEventListener('click', () => this.toggleCategory(category));
+
+                colDiv.appendChild(cardDiv);
+                return colDiv;
+            }
+
+            toggleCategory(category) {
+                const categoryId = category._id;
+                const categoryCard = document.querySelector(`[data-category-id="${categoryId}"]`);
+
+                if (this.selectedServices.has(categoryId)) {
+                    // Remove service
+                    this.selectedServices.delete(categoryId);
+                    categoryCard.classList.remove('selected', 'border-success');
+                } else {
+                    // Add service
+                    this.selectedServices.add(categoryId);
+                    categoryCard.classList.add('selected', 'border-success');
+                }
+
+                this.updateSelectedServicesDisplay();
+                this.updateFormData();
+            }
+
+            updateSelectedServicesDisplay() {
+                const summaryDiv = document.getElementById('selectedServicesSummary');
+                const listDiv = document.getElementById('selectedServicesList');
+
+                if (this.selectedServices.size === 0) {
+                    summaryDiv.style.display = 'none';
+                    return;
+                }
+
+                summaryDiv.style.display = 'block';
+                listDiv.innerHTML = '';
+
+                this.selectedServices.forEach(categoryId => {
+                    const category = this.categories.find(cat => cat._id === categoryId);
+                    if (category) {
+                        const serviceTag = this.createServiceTag(category);
+                        listDiv.appendChild(serviceTag);
+                    }
+                });
+            }
+
+            createServiceTag(category) {
+                const tagDiv = document.createElement('div');
+                tagDiv.className = 'bg-gradient-to-br from-green-500 to-teal-500 text-white px-3 py-2 rounded-full text-sm font-medium d-flex align-items-center gap-2';
+
+                tagDiv.innerHTML = `
+                    <span>${category.name}</span>
+                    <button type="button" class="remove-service" onclick="serviceSelector.removeService('${category._id}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+
+                return tagDiv;
+            }
+
+            removeService(categoryId) {
+                const categoryCard = document.querySelector(`[data-category-id="${categoryId}"]`);
+                if (categoryCard) {
+                    categoryCard.classList.remove('selected', 'border-success');
+                }
+                this.selectedServices.delete(categoryId);
+                this.updateSelectedServicesDisplay();
+                this.updateFormData();
+            }
+
+            updateFormData() {
+                // Remove existing hidden inputs
+                const existingInputs = document.querySelectorAll('input[name="selectedServices[]"]');
+                existingInputs.forEach(input => input.remove());
+
+                // Add new hidden inputs for selected services
+                const form = document.getElementById('providerRegisterForm');
+                this.selectedServices.forEach(categoryId => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'selectedServices[]';
+                    hiddenInput.value = categoryId;
+                    form.appendChild(hiddenInput);
+                });
+
+                // Update services count
+                const countInput = document.getElementById('selectedServicesCount');
+                const countBadge = document.getElementById('servicesCount');
+
+                if (countInput) {
+                    countInput.value = this.selectedServices.size;
+                }
+
+                if (countBadge) {
+                    if (this.selectedServices.size > 0) {
+                        countBadge.textContent = this.selectedServices.size;
+                        countBadge.style.display = 'inline-block';
+                    } else {
+                        countBadge.style.display = 'none';
+                    }
+                }
+            }
+
+            showError(message) {
+                const loadingDiv = document.getElementById('categoriesLoading');
+                loadingDiv.innerHTML = `
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>${message}</div>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-3" onclick="serviceSelector.loadServiceCategories()">
+                            <i class="fas fa-redo me-1"></i>Retry
+                        </button>
+                    </div>
+                `;
+            }
+
+            setupEventListeners() {
+                // Form validation to ensure at least one service is selected
+                const form = document.getElementById('providerRegisterForm');
+                form.addEventListener('submit', (e) => {
+                    if (this.selectedServices.size === 0) {
+                        e.preventDefault();
+
+                        // Show better error message
+                        const serviceSection = document.querySelector('.service-selection-container');
+                        serviceSection.style.border = '2px solid #dc3545';
+                        serviceSection.style.background = '#f8d7da';
+
+                        // Add error message
+                        let errorMsg = serviceSection.querySelector('.service-error-msg');
+                        if (!errorMsg) {
+                            errorMsg = document.createElement('div');
+                            errorMsg.className = 'alert alert-danger service-error-msg mt-3';
+                            errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Please select at least one service category that you want to offer.';
+                            serviceSection.appendChild(errorMsg);
+                        }
+
+                        // Scroll to service section
+                        document.getElementById('categoriesContainer').scrollIntoView({ behavior: 'smooth' });
+
+                        // Reset button state
+                        const btn = document.getElementById('registerBtn');
+                        const btnText = btn.querySelector('.btn-text');
+                        const btnLoading = btn.querySelector('.btn-loading');
+
+                        btnText.classList.remove('d-none');
+                        btnLoading.classList.add('d-none');
+                        btn.disabled = false;
+
+                        return false;
+                    } else {
+                        // Remove error styling if services are selected
+                        const serviceSection = document.querySelector('.service-selection-container');
+                        serviceSection.style.border = '';
+                        serviceSection.style.background = '';
+
+                        const errorMsg = serviceSection.querySelector('.service-error-msg');
+                        if (errorMsg) {
+                            errorMsg.remove();
+                        }
+                    }
+                });
+            }
+        }
+
+        // Real-time form validation
+        function setupRealTimeValidation() {
+            // Email validation
+            document.getElementById('email').addEventListener('blur', function () {
+                const email = this.value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const feedback = this.parentElement.querySelector('.invalid-feedback') || createFeedbackElement(this);
+
+                if (email && !emailRegex.test(email)) {
+                    this.classList.add('is-invalid');
+                    feedback.textContent = 'Please enter a valid email address';
+                    feedback.style.display = 'block';
+                } else {
+                    this.classList.remove('is-invalid');
+                    feedback.style.display = 'none';
+                }
+            });
+
+            // Phone validation
+            document.getElementById('phone').addEventListener('blur', function () {
+                const phone = this.value;
+                const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                const feedback = this.parentElement.querySelector('.invalid-feedback') || createFeedbackElement(this);
+
+                if (phone && !phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+                    this.classList.add('is-invalid');
+                    feedback.textContent = 'Please enter a valid phone number';
+                    feedback.style.display = 'block';
+                } else {
+                    this.classList.remove('is-invalid');
+                    feedback.style.display = 'none';
+                }
+            });
+
+            // Password confirmation validation
+            document.getElementById('confirmPassword').addEventListener('input', function () {
+                const password = document.getElementById('password').value;
+                const confirmPassword = this.value;
+                const feedback = this.parentElement.querySelector('.invalid-feedback') || createFeedbackElement(this);
+
+                if (confirmPassword && password !== confirmPassword) {
+                    this.classList.add('is-invalid');
+                    feedback.textContent = 'Passwords do not match';
+                    feedback.style.display = 'block';
+                } else {
+                    this.classList.remove('is-invalid');
+                    feedback.style.display = 'none';
+                }
+            });
+
+            // Years of experience validation
+            document.getElementById('yearsOfExperience').addEventListener('blur', function () {
+                const value = parseInt(this.value);
+                const feedback = this.parentElement.querySelector('.invalid-feedback') || createFeedbackElement(this);
+
+                if (this.value && (value < 0 || value > 50)) {
+                    this.classList.add('is-invalid');
+                    feedback.textContent = 'Years of experience must be between 0 and 50';
+                    feedback.style.display = 'block';
+                } else {
+                    this.classList.remove('is-invalid');
+                    feedback.style.display = 'none';
+                }
+            });
+        }
+
+        function createFeedbackElement(input) {
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.style.display = 'none';
+            input.parentElement.appendChild(feedback);
+            return feedback;
+        }
+
+        // Add progress indicator
+        function updateProgressIndicator() {
+            const sections = document.querySelectorAll('.mb-8.pb-6.border-b.border-gray-200');
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress mb-4';
+            progressBar.style.height = '8px';
+            progressBar.innerHTML = `
+                <div class="progress-bar bg-gradient-to-r from-primary to-secondary" role="progressbar" style="width: 0%" id="formProgress"></div>
+            `;
+
+            const form = document.getElementById('providerRegisterForm');
+            form.insertBefore(progressBar, form.firstChild);
+
+            // Update progress on scroll
+            window.addEventListener('scroll', function () {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                document.getElementById('formProgress').style.width = Math.min(scrollPercent, 100) + '%';
+            });
+        }
+
+        // Location form functionality
+        function setupLocationForm() {
+            // Insurance acceptance toggle
+            const acceptsInsuranceCheckbox = document.getElementById('acceptsInsurance');
+            const insuranceProvidersDiv = document.getElementById('insuranceProviders');
+
+            acceptsInsuranceCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    insuranceProvidersDiv.style.display = 'block';
+                } else {
+                    insuranceProvidersDiv.style.display = 'none';
+                    // Uncheck all insurance provider checkboxes
+                    insuranceProvidersDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+            });
+
+            // Practice type change handler
+            const practiceTypeSelect = document.getElementById('practiceType');
+            const addressFields = document.querySelectorAll('#address, #city, #state, #zipCode');
+
+            practiceTypeSelect.addEventListener('change', function () {
+                if (this.value === 'telemedicine_only') {
+                    // Make address fields optional for telemedicine-only
+                    addressFields.forEach(field => {
+                        field.required = false;
+                        field.parentElement.querySelector('.form-text').innerHTML =
+                            '<i class="fas fa-info-circle me-1"></i>Optional for telemedicine-only practices';
+                    });
+                } else {
+                    // Make address fields required for physical practices
+                    addressFields.forEach(field => {
+                        field.required = true;
+                        field.parentElement.querySelector('.form-text').innerHTML =
+                            '<i class="fas fa-map-pin me-1"></i>Required for physical practice locations';
+                    });
+                }
+            });
+
+            // ZIP code validation
+            const zipCodeInput = document.getElementById('zipCode');
+            zipCodeInput.addEventListener('input', function () {
+                const zipRegex = /^\d{5}(-\d{4})?$/;
+                const feedback = this.parentElement.querySelector('.invalid-feedback') || createFeedbackElement(this);
+
+                if (this.value && !zipRegex.test(this.value)) {
+                    this.classList.add('is-invalid');
+                    feedback.textContent = 'Please enter a valid ZIP code (12345 or 12345-6789)';
+                    feedback.style.display = 'block';
+                } else {
+                    this.classList.remove('is-invalid');
+                    feedback.style.display = 'none';
+                }
+            });
+        }
+
+        // Enhanced form validation to include location fields
+        function validateLocationFields() {
+            const errors = [];
+            const practiceType = document.getElementById('practiceType').value;
+
+            // Only require location for non-telemedicine practices
+            if (practiceType !== 'telemedicine_only') {
+                const requiredLocationFields = ['address', 'city', 'state', 'zipCode'];
+
+                requiredLocationFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value.trim()) {
+                        errors.push(`${getFieldLabel(fieldId)} is required for physical practice locations`);
+                    }
+                });
+
+                // Validate ZIP code format
+                const zipCode = document.getElementById('zipCode').value;
+                const zipRegex = /^\d{5}(-\d{4})?$/;
+                if (zipCode && !zipRegex.test(zipCode)) {
+                    errors.push('Please enter a valid ZIP code');
+                }
+            }
+
+            return errors;
+        }
+
+        // Update the main validation function
+        function validateForm() {
+            const errors = [];
+
+            // Check required fields
+            const requiredFields = [
+                'firstName', 'lastName', 'email', 'phone', 'password', 'confirmPassword',
+                'professionalTitle', 'specialization', 'yearsOfExperience', 'licenseNumber'
+            ];
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    errors.push(`${getFieldLabel(fieldId)} is required`);
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                errors.push('Please enter a valid email address');
+            }
+
+            // Validate phone format
+            const phone = document.getElementById('phone').value;
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            if (phone && !phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+                errors.push('Please enter a valid phone number');
+            }
+
+            // Validate password match
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                errors.push('Passwords do not match');
+            }
+
+            // Validate password strength
+            if (password && password.length < 8) {
+                errors.push('Password must be at least 8 characters long');
+            }
+
+            // Validate years of experience
+            const yearsOfExperience = parseInt(document.getElementById('yearsOfExperience').value);
+            if (yearsOfExperience < 0 || yearsOfExperience > 50) {
+                errors.push('Years of experience must be between 0 and 50');
+            }
+
+            // Check if at least one service is selected
+            if (!serviceSelector || serviceSelector.selectedServices.size === 0) {
+                errors.push('Please select at least one service category');
+            }
+
+            // Check if license document is uploaded
+            const licenseDocument = document.getElementById('licenseDocument');
+            if (!licenseDocument.files || licenseDocument.files.length === 0) {
+                errors.push('Professional license document is required');
+            }
+
+            // Check terms acceptance
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                errors.push('You must accept the terms and conditions');
+            }
+
+            // Validate location fields
+            const locationErrors = validateLocationFields();
+            errors.push(...locationErrors);
+
+            return {
+                isValid: errors.length === 0,
+                errors: errors
+            };
+        }
+
+        // Initialize everything when page loads
+        let serviceSelector;
+        document.addEventListener('DOMContentLoaded', function () {
+            serviceSelector = new ServiceSelector();
+            setupRealTimeValidation();
+            setupLocationForm();
+            updateProgressIndicator();
+
+            // Add smooth scrolling to form sections
+            document.querySelectorAll('h3').forEach(heading => {
+                heading.style.cursor = 'pointer';
+                heading.addEventListener('click', function () {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

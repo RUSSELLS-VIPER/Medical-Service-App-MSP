@@ -1,0 +1,205 @@
+<section class="py-5" style="margin-top: 90px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-10 col-md-8 col-lg-6">
+                <div class="card shadow-sm rounded-4 overflow-hidden">
+                    <div class="p-4 text-center">
+                        <div class="mx-auto mb-3 rounded-circle d-inline-flex align-items-center justify-content-center"
+                            style="width:64px;height:64px;background:#e0f2fe;">
+                            <i class="fas fa-user-injured text-primary"></i>
+                        </div>
+                        <h2 class="h4 mb-1">Patient Login</h2>
+                        <p class="text-muted mb-0">Access your patient dashboard</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="errorMessage" class="alert alert-danger d-none"></div>
+                        <div id="successMessage" class="alert alert-success d-none"></div>
+                        <form id="patientLoginForm" class="">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" required
+                                    value="patient@msp.com">
+                            </div>
+                            <div class="mb-3 position-relative">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" required value="patient@msp.com">
+                                <span id="passwordToggle" class="position-absolute top-50 end-0 translate-middle-y me-3"
+                                    style="cursor:pointer;">
+                                    <i class="far fa-eye"></i>
+                                </span>
+                            </div>
+                            <button type="submit" id="loginButton"
+                                class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
+                                <span id="buttonText">Login as Patient</span>
+                                <span id="loadingSpinner" class="ms-2 d-none"><i
+                                        class="fas fa-spinner fa-spin"></i></span>
+                            </button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p class="text-muted mb-2">Don't have an account?
+                                <a href="/register/patient">Register here</a>
+                            </p>
+                            <a class="small" href="/">Back to Home</a>
+                        </div>
+                        <div id="debugInfo" class="mt-3 p-2 border rounded d-none small">
+                            <div id="debugContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Toggle password visibility
+    document.getElementById('passwordToggle').addEventListener('click', function () {
+        const passwordInput = document.getElementById('password');
+        const icon = this.querySelector('i');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+
+    // Form submission handler
+    document.getElementById('patientLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+        const debugDiv = document.getElementById('debugInfo');
+        const debugContent = document.getElementById('debugContent');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Reset messages
+        errorDiv.classList.add('d-none');
+        successDiv.classList.add('d-none');
+        debugDiv.classList.add('d-none');
+
+        // Show loading state
+        loginButton.disabled = true;
+        buttonText.textContent = "Logging in...";
+        loadingSpinner.classList.remove('d-none');
+
+        try {
+            const response = await fetch('/auth/patient/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            // Debug info
+           
+
+            if (data.success) {
+                // Store token in both cookie and localStorage
+                document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userRole', 'patient');
+                localStorage.setItem('userData', JSON.stringify(data.data));
+
+                successDiv.textContent = 'Login successful! Redirecting to dashboard...';
+                successDiv.classList.remove('d-none');
+
+                console.log('✅ Login successful, token stored:', data.token);
+
+                // Wait a moment to show the success message, then redirect
+                setTimeout(() => {
+                    window.location.href = '/patient/dashboard';
+                }, 1500);
+            } else {
+                // Handle specific error cases
+                let errorMessage = data.message || 'Login failed. Please check your credentials.';
+
+                if (data.errorCode === 'EMAIL_NOT_VERIFIED') {
+                    errorMessage += ' Please verify your email address.';
+                } else if (data.errorCode === 'PENDING_APPROVAL') {
+                    errorMessage += ' Your account is pending approval.';
+                }
+
+                errorDiv.textContent = errorMessage;
+                errorDiv.classList.remove('d-none');
+
+                // If email not verified, offer to resend verification
+                if (data.errorCode === 'EMAIL_NOT_VERIFIED') {
+                    const resendDiv = document.createElement('div');
+                    resendDiv.className = 'mt-2';
+                    resendDiv.innerHTML = `
+                            <button id="resendVerification" 
+                                class="btn btn-link btn-sm p-0">
+                                Resend verification email
+                            </button>
+                        `;
+                    errorDiv.appendChild(resendDiv);
+
+                    document.getElementById('resendVerification').addEventListener('click', async () => {
+                        try {
+                            const resendResponse = await fetch('/auth/patient/resend-verification', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ email })
+                            });
+
+                            const resendData = await resendResponse.json();
+
+                            if (resendData.success) {
+                                successDiv.textContent = 'Verification email sent. Please check your inbox.';
+                                successDiv.classList.remove('d-none');
+                                errorDiv.classList.add('d-none');
+                            } else {
+                                errorDiv.textContent = 'Failed to resend verification email. Please try again later.';
+                            }
+                        } catch (err) {
+                            errorDiv.textContent = 'Error resending verification email. Please try again later.';
+                        }
+                    });
+                }
+            }
+        } catch (err) {
+            errorDiv.textContent = 'An error occurred during login. Please try again.';
+            errorDiv.classList.remove('d-none');
+
+            debugContent.innerHTML += `<p><strong>Error:</strong> ${err.message}</p>`;
+            debugDiv.classList.remove('d-none');
+        } finally {
+            loginButton.disabled = false;
+            buttonText.textContent = "Login as Patient";
+            loadingSpinner.classList.add('d-none');
+        }
+    });
+
+    async function testDashboardRoute() {
+        try {
+            const testResponse = await fetch('/patient/dashboard');
+
+            const debugDiv = document.getElementById('debugInfo');
+            const debugContent = document.getElementById('debugContent');
+
+            debugContent.innerHTML += `
+                    <p><strong>Dashboard Test:</strong> Status ${testResponse.status}</p>
+                    <p><strong>Redirected:</strong> ${testResponse.redirected ? 'Yes' : 'No'}</p>
+                    ${testResponse.redirected ? `<p><strong>Redirect URL:</strong> ${testResponse.url}</p>` : ''}
+                `;
+            debugDiv.classList.remove('hidden');
+        } catch (err) {
+        }
+    }
+
+</script>

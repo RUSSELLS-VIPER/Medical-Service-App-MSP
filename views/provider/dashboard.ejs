@@ -1,0 +1,3 @@
+<%- include('../layouts/sb-admin', { title: 'Provider Dashboard' , currentPage: 'dashboard' , body:
+    include('./partials/dashboard-body', { stats: typeof stats !=='undefined' ? stats : null, user: typeof user
+    !=='undefined' ? user : null }) }) %>

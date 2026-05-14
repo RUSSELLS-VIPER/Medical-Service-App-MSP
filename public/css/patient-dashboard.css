@@ -1,0 +1,115 @@
+/* patient-dashboard.css - Modern, clean, and responsive styles for the patient dashboard */
+
+.stats-card {
+    border-radius: 1rem;
+    transition: box-shadow 0.2s;
+}
+
+.stats-card:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+}
+
+.status-badge {
+    padding: 0.25em 0.75em;
+    border-radius: 1em;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-left: 0.5em;
+}
+
+.status-scheduled {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-confirmed {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.status-completed {
+    background: #e3fcec;
+    color: #2e7d32;
+}
+
+.status-cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-no_show {
+    background: #f3e5f5;
+    color: #6a1b9a;
+}
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e3f2fd;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+    border: none;
+    border-radius: 2em;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #1565c0 0%, #1e88e5 100%);
+}
+
+.table thead th {
+    background: #f5f7fa;
+    color: #1976d2;
+    font-weight: 700;
+    border: none;
+}
+
+.table tbody tr {
+    transition: background 0.15s;
+}
+
+.table tbody tr:hover {
+    background: #f0f4f8;
+}
+
+.alert {
+    font-size: 1rem;
+    border-radius: 0.75em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 991px) {
+    .stats-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .stats-card,
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .icon-circle {
+        width: 32px;
+        height: 32px;
+    }
+}

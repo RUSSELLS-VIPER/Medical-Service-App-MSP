@@ -1,0 +1,738 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Verifications & Approvals</h1>
+
+</div>
+
+<!-- Statistics Row -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Verification
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsPendingTop">
+                            <%= (stats && typeof stats.pending !=='undefined' ) ? stats.pending : 0 %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Today</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsApprovedToday">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected Today</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsRejectedToday">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-times fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Avg Review Time</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">2.3 days</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Row -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="d-flex">
+            <select class="form-control mr-2" id="statusFilter" style="width: auto;">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <select class="form-control mr-2" id="priorityFilter" style="width: auto;">
+                <option value="">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="normal">Normal Priority</option>
+                <option value="low">Low Priority</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-outline-secondary" type="button" id="exportBtn">
+                <i class="fas fa-download fa-sm"></i> Export
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Verifications Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Pending Provider Verifications</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="verificationsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>Specialization</th>
+                        <th>Documents</th>
+                        <th>Submitted Date</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof providerVerifications !=='undefined' && providerVerifications &&
+                        providerVerifications.length> 0) { %>
+                        <% providerVerifications.forEach(function (v) { %>
+                            <tr data-verification-id="<%= v._id || '' %>" data-provider-id="<%= v.provider._id %>"
+                                data-provider-name="Dr. <%= v.provider.firstName %> <%= v.provider.lastName %>"
+                                data-provider-email="<%= v.provider.email %>"
+                                data-provider-phone="<%= v.provider.phone || '' %>"
+                                data-provider-specialization="<%= v.provider.specialization || 'General Practice' %>"
+                                data-provider-license="<%= v.provider.licenseNumber || '' %>"
+                                data-provider-experience="<%= (typeof v.provider.yearsOfExperience !== 'undefined') ? v.provider.yearsOfExperience : '' %>">
+                                <td>
+                                    <div class="font-weight-bold">Dr. <%= v.provider.firstName %>
+                                            <%= v.provider.lastName %>
+                                    </div>
+                                    <small class="text-muted">
+                                        <%= v.provider.email %>
+                                    </small>
+                                    <div class="d-none" data-docs="1">
+                                        <% (v.documents || []).forEach(function (doc) { %>
+                                            <a href="<%= doc.documentUrl %>" data-doc="1"
+                                                data-doc-type="<%= doc.documentType %>"></a>
+                                            <% }) %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <%= v.provider.specialization || 'General Practice' %>
+                                </td>
+                                <td><span class="badge badge-info">
+                                        <%= (v.documents || []).length %> docs
+                                    </span></td>
+                                <td>
+                                    <%= new Date(v.createdAt).toLocaleDateString() %>
+                                </td>
+                                <td><span class="badge badge-warning">Normal</span></td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary review-doc-btn"
+                                            data-provider-id="<%= v.provider._id %>"
+                                            data-verification-id="<%= v._id || '' %>">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success approve-provider-btn"
+                                            data-provider-id="<%= v.provider._id %>"
+                                            data-verification-id="<%= v._id || '' %>">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger reject-provider-btn"
+                                            data-provider-id="<%= v.provider._id %>"
+                                            data-verification-id="<%= v._id || '' %>">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No pending provider verifications
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Service Approvals Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Pending Service Approvals</h6>
+        <div>
+            <span class="badge badge-warning" id="pendingServicesCount">0</span>
+            <span class="badge badge-info ml-2" id="loadingStatus">Loading...</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info mb-3" id="debugInfo" style="display: none;">
+            <h6><i class="fas fa-info-circle"></i> Debug Information</h6>
+            <div id="debugContent"></div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="pendingServicesTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Provider</th>
+                        <th>Category</th>
+                        <th>Duration</th>
+                        <th>Submitted Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingServicesTableBody">
+                    <% if (typeof pendingServices !=='undefined' && pendingServices && pendingServices.length> 0) { %>
+                        <% pendingServices.forEach(function (service) { %>
+                            <tr data-service-id="<%= service._id %>">
+                                <td>
+                                    <div class="font-weight-bold">
+                                        <%= service.serviceName || service.name || 'Service' %>
+                                    </div>
+                                    <small class="text-muted">
+                                        <%= service.shortDescription || service.description || '' %>
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-2"
+                                            style="width: 32px; height: 32px; font-size: 14px; font-weight: bold;">
+                                            <%= (service.provider.firstName?.charAt(0) +
+                                                service.provider.lastName?.charAt(0)).toUpperCase() %>
+                                        </div>
+                                        <div>
+                                            <div class="font-weight-bold">Dr. <%= service.provider.firstName %>
+                                                    <%= service.provider.lastName %>
+                                            </div>
+                                            <small class="text-muted">
+                                                <%= service.provider.email %>
+                                            </small>
+                                            <br>
+                                            <small class="text-info">
+                                                <%= service.provider.specialization || 'General Practice' %>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        <%= service.category?.name || service.specialization || 'Category' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-secondary">
+                                        <%= service.duration || 30 %> min
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <%= new Date(service.createdAt).toLocaleDateString() %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-warning">Pending</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-info btn-sm view-service-btn"
+                                            data-service-id="<%= service._id %>">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-sm approve-service-btn"
+                                            data-service-id="<%= service._id %>">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm reject-service-btn"
+                                            data-service-id="<%= service._id %>">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No pending services for approval
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Verification Preview Modal -->
+<div class="modal fade" id="verificationModal" tabindex="-1" role="dialog" aria-labelledby="verificationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verificationModalLabel">Provider Verification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Provider Info</h6>
+                        <p class="mb-1"><strong>Name:</strong> <span id="modalProviderName">-</span></p>
+                        <p class="mb-1"><strong>Email:</strong> <span id="modalProviderEmail">-</span></p>
+                        <p class="mb-1"><strong>Phone:</strong> <span id="modalProviderPhone">-</span></p>
+                        <p class="mb-1"><strong>Specialization:</strong> <span id="modalProviderSpecialization">-</span>
+                        </p>
+                        <p class="mb-1"><strong>License:</strong> <span id="modalProviderLicense">-</span></p>
+                        <p class="mb-1"><strong>Experience:</strong> <span id="modalProviderExperience">-</span></p>
+                        <p class="mb-1"><strong>Registered:</strong> <span id="modalProviderCreatedAt">-</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Documents</h6>
+                        <ul class="list-group" id="modalDocumentsList">
+                            <li class="list-group-item text-muted">No documents uploaded</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="verifications-json"><%- JSON.stringify(providerVerifications || []) %></script>
+
+<script>
+    // Build a client-side map for quick modal population, using safe JSON from server
+    window.verificationsData = {};
+    var verificationsJSONEl = document.getElementById('verifications-json');
+    window.verificationsList = [];
+    if (verificationsJSONEl) {
+        try {
+            window.verificationsList = JSON.parse(verificationsJSONEl.textContent);
+        } catch (e) {
+            console.error('Failed to parse verifications JSON', e);
+            window.verificationsList = [];
+        }
+    }
+    (window.verificationsList || []).forEach(function (v) {
+        var key = (v && (v._id || (v.provider && v.provider._id))) || '';
+        if (!key) return;
+        var provider = v.provider || {};
+        window.verificationsData[key] = {
+            verificationId: v._id || '',
+            providerId: provider._id || '',
+            provider: {
+                name: 'Dr. ' + (provider.firstName || '') + ' ' + (provider.lastName || ''),
+                email: provider.email || '',
+                phone: provider.phone || '',
+                specialization: provider.specialization || 'General Practice',
+                licenseNumber: provider.licenseNumber || '',
+                yearsOfExperience: (typeof provider.yearsOfExperience !== 'undefined') ? provider.yearsOfExperience : '',
+                createdAt: (v.createdAt || provider.createdAt) || null
+            },
+            documents: Array.isArray(v.documents) ? v.documents : []
+        };
+    });
+
+    function reviewDocuments(providerId, verificationId) {
+        var key = verificationId || providerId;
+        var row = document.querySelector('tr[data-verification-id="' + (verificationId || '') + '"][data-provider-id="' + providerId + '"]') || null;
+        var data = window.verificationsData[key];
+
+        // Fallback to DOM dataset if map missing
+        if (!data && row) {
+            data = {
+                provider: {
+                    name: row.getAttribute('data-provider-name') || 'Provider',
+                    email: row.getAttribute('data-provider-email') || 'N/A',
+                    phone: row.getAttribute('data-provider-phone') || 'N/A',
+                    specialization: row.getAttribute('data-provider-specialization') || 'N/A',
+                    licenseNumber: row.getAttribute('data-provider-license') || 'N/A',
+                    yearsOfExperience: row.getAttribute('data-provider-experience') || 'N/A',
+                    createdAt: null
+                },
+                documents: Array.from(row.querySelectorAll('[data-doc="1"]')).map(function (a) {
+                    return { documentType: a.getAttribute('data-doc-type') || 'document', documentUrl: a.getAttribute('href') || '#' };
+                })
+            };
+        }
+
+        if (!data) {
+            alert('Verification details not found');
+            return;
+        }
+
+        document.getElementById('modalProviderName').textContent = data.provider.name || 'Provider';
+        document.getElementById('modalProviderEmail').textContent = data.provider.email || 'N/A';
+        document.getElementById('modalProviderPhone').textContent = data.provider.phone || 'N/A';
+        document.getElementById('modalProviderSpecialization').textContent = data.provider.specialization || 'N/A';
+        document.getElementById('modalProviderLicense').textContent = data.provider.licenseNumber || 'N/A';
+        document.getElementById('modalProviderExperience').textContent = (data.provider.yearsOfExperience !== '' && data.provider.yearsOfExperience !== null && typeof data.provider.yearsOfExperience !== 'undefined') ? data.provider.yearsOfExperience : 'N/A';
+        document.getElementById('modalProviderCreatedAt').textContent = data.provider.createdAt ? new Date(data.provider.createdAt).toLocaleString() : 'N/A';
+
+        var list = document.getElementById('modalDocumentsList');
+        list.innerHTML = '';
+        if (Array.isArray(data.documents) && data.documents.length > 0) {
+            data.documents.forEach(function (doc) {
+                var li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                var type = (doc && doc.documentType) ? doc.documentType : 'document';
+                var url = (doc && doc.documentUrl) ? doc.documentUrl : '#';
+                li.innerHTML = '<span class="text-capitalize">' + type + '</span>' +
+                    '<a href="' + url + '" target="_blank" class="btn btn-sm btn-outline-primary">View</a>';
+                list.appendChild(li);
+            });
+        } else {
+            var empty = document.createElement('li');
+            empty.className = 'list-group-item text-muted';
+            empty.textContent = 'No documents uploaded';
+            list.appendChild(empty);
+        }
+
+        $('#verificationModal').modal('show');
+    }
+
+    function approveProvider(providerId, verificationId) {
+        const body = { verificationId: verificationId, providerId: providerId, status: 'approved', reviewNotes: '' };
+        $.ajax({
+            url: '/admin/verifications/review',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(body)
+        }).done(function (resp) {
+            if (!resp || resp.success !== true) {
+                alert('Failed to approve');
+                return;
+            }
+            alert('Provider approved');
+            location.reload();
+        }).fail(function (xhr) {
+            const msg = (xhr && xhr.responseJSON && xhr.responseJSON.message) || 'Approval failed';
+            alert('Error: ' + msg);
+        });
+    }
+
+    function rejectProvider(providerId, verificationId) {
+        const reason = prompt('Enter rejection notes (optional):') || '';
+        const body = { verificationId: verificationId, providerId: providerId, status: 'rejected', reviewNotes: reason };
+        $.ajax({
+            url: '/admin/verifications/review',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(body)
+        }).done(function (resp) {
+            if (!resp || resp.success !== true) {
+                alert('Failed to reject');
+                return;
+            }
+            alert('Provider rejected');
+            location.reload();
+        }).fail(function (xhr) {
+            const msg = (xhr && xhr.responseJSON && xhr.responseJSON.message) || 'Rejection failed';
+            alert('Error: ' + msg);
+        });
+    }
+
+    async function loadPendingServices() {
+        try {
+            const label = document.getElementById('loadingStatus');
+            if (label) label.textContent = 'Loading...';
+            const res = await fetch('/admin/services/pending');
+            const json = await res.json();
+            if (!res.ok || !json.success) throw new Error(json.message || 'Failed fetching services');
+            const services = json.data || [];
+            const stats = json.stats || {};
+            if (document.getElementById('pendingServicesCount')) {
+                document.getElementById('pendingServicesCount').textContent = services.length;
+            }
+            if (document.getElementById('statsPending')) {
+                document.getElementById('statsPending').textContent = stats.pending || 0;
+            }
+            if (document.getElementById('statsApproved')) {
+                document.getElementById('statsApproved').textContent = stats.approved || 0;
+            }
+            if (document.getElementById('statsRejected')) {
+                document.getElementById('statsRejected').textContent = stats.rejected || 0;
+            }
+            const tbody = document.getElementById('pendingServicesTableBody');
+            if (tbody) {
+                tbody.innerHTML = '';
+                services.forEach(function (service) {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-service-id', service._id);
+                    tr.innerHTML = `
+                        <td>
+                            <div class="font-weight-bold">${service.name || service.serviceName || 'Service'}</div>
+                            <small class="text-muted">${service.shortDescription || service.description || ''}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-2" style="width:32px;height:32px;font-size:14px;font-weight:bold;">
+                                    ${(service && service.provider && service.provider.firstName ? service.provider.firstName.charAt(0) : '')}${(service && service.provider && service.provider.lastName ? service.provider.lastName.charAt(0) : '')}
+                                </div>
+                                <div>
+                                    <div class="font-weight-bold">Dr. ${(service && service.provider && service.provider.firstName) ? service.provider.firstName : ''} ${(service && service.provider && service.provider.lastName) ? service.provider.lastName : ''}</div>
+                                    <small class="text-muted">${(service && service.provider && service.provider.email) ? service.provider.email : ''}</small><br/>
+                                    <small class="text-info">${(service && service.provider && service.provider.specialization) ? service.provider.specialization : 'General Practice'}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-info">${(service && service.category && service.category.name) ? service.category.name : (service && service.specialization ? service.specialization : 'Category')}</span></td>
+                        <td><span class="badge badge-secondary">${service.duration || 30} min</span></td>
+                        <td>${new Date(service.createdAt).toLocaleDateString()}</td>
+                        <td><span class="badge badge-warning">Pending</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-info btn-sm" onclick="viewServiceDetails('${service._id}')"><i class="fas fa-eye"></i></button>
+                                <button type="button" class="btn btn-success btn-sm" onclick="approveService('${service._id}')"><i class="fas fa-check"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="rejectService('${service._id}')"><i class="fas fa-times"></i></button>
+                            </div>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+            if (label) label.textContent = 'Loaded';
+        } catch (err) {
+            console.error(err);
+            const label = document.getElementById('loadingStatus');
+            if (label) label.textContent = 'Error';
+            showDebugInfo('Load error: ' + err.message);
+        }
+    }
+
+    function showDebugInfo(message) {
+        const box = document.getElementById('debugInfo');
+        const content = document.getElementById('debugContent');
+        if (box && content) {
+            box.style.display = '';
+            const p = document.createElement('div');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            content.prepend(p);
+        }
+    }
+
+    function clearDebugInfo() {
+        const box = document.getElementById('debugInfo');
+        const content = document.getElementById('debugContent');
+        if (box && content) {
+            content.innerHTML = '';
+            box.style.display = 'none';
+        }
+    }
+
+    async function refreshServiceStats() {
+        try {
+            const res = await fetch('/admin/services/approval-stats');
+            const json = await res.json();
+            if (!res.ok || !json.success) throw new Error(json.message || 'Failed stats');
+            const d = json.data || {};
+            if (document.getElementById('statsPending')) document.getElementById('statsPending').textContent = d.pending || 0;
+            if (document.getElementById('statsApproved')) document.getElementById('statsApproved').textContent = d.approved || 0;
+            if (document.getElementById('statsRejected')) document.getElementById('statsRejected').textContent = d.rejected || 0;
+            if (document.getElementById('statsApprovedToday')) document.getElementById('statsApprovedToday').textContent = d.approvedToday || 0;
+            if (document.getElementById('statsRejectedToday')) document.getElementById('statsRejectedToday').textContent = d.rejectedToday || 0;
+        } catch (err) {
+            console.error(err);
+            showDebugInfo('Stats error: ' + err.message);
+        }
+    }
+
+    function refreshVerifications() { location.reload(); }
+
+    function viewServiceDetails(serviceId) {
+        alert('Service details for ' + serviceId);
+    }
+
+    async function approveService(serviceId) {
+        try {
+            const res = await fetch(`/admin/services/${serviceId}/approve`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminNotes: '' }) });
+            const json = await res.json();
+            if (!res.ok || !json.success) throw new Error(json.message || 'Approve failed');
+            alert('Service approved');
+            loadPendingServices();
+            refreshServiceStats();
+        } catch (err) {
+            console.error(err);
+            alert('Error: ' + err.message);
+        }
+    }
+
+    async function rejectService(serviceId) {
+        try {
+            const reason = prompt('Enter rejection reason (optional):') || '';
+            const res = await fetch(`/admin/services/${serviceId}/reject`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rejectionReason: reason, adminNotes: reason }) });
+            const json = await res.json();
+            if (!res.ok || !json.success) throw new Error(json.message || 'Reject failed');
+            alert('Service rejected');
+            loadPendingServices();
+            refreshServiceStats();
+        } catch (err) {
+            console.error(err);
+            alert('Error: ' + err.message);
+        }
+    }
+
+    // Initialize event listeners for all actions
+    document.addEventListener('DOMContentLoaded', function () {
+        // Provider verification handlers
+        document.querySelectorAll('.review-doc-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const providerId = this.dataset.providerId;
+                const verificationId = this.dataset.verificationId;
+                reviewDocuments(providerId, verificationId);
+            });
+        });
+
+        document.querySelectorAll('.approve-provider-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const providerId = this.dataset.providerId;
+                const verificationId = this.dataset.verificationId;
+                approveProvider(providerId, verificationId);
+            });
+        });
+
+        document.querySelectorAll('.reject-provider-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const providerId = this.dataset.providerId;
+                const verificationId = this.dataset.verificationId;
+                rejectProvider(providerId, verificationId);
+            });
+        });
+
+        // Service approval handlers
+        document.querySelectorAll('.view-service-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const serviceId = this.dataset.serviceId;
+                viewServiceDetails(serviceId);
+            });
+        });
+
+        document.querySelectorAll('.approve-service-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const serviceId = this.dataset.serviceId;
+                approveService(serviceId);
+            });
+        });
+
+        document.querySelectorAll('.reject-service-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const serviceId = this.dataset.serviceId;
+                rejectService(serviceId);
+            });
+        });
+
+        // Quick action buttons
+        document.querySelector('.refresh-services-btn')?.addEventListener('click', function () {
+            loadPendingServices();
+        });
+
+        document.querySelector('.show-debug-btn')?.addEventListener('click', function () {
+            const message = this.dataset.message;
+            showDebugInfo(message);
+        });
+
+        // Export button handler
+        document.getElementById('exportBtn')?.addEventListener('click', function () {
+            // Add export functionality here
+            console.log('Export clicked');
+        });
+
+        // Filter handlers
+        document.getElementById('statusFilter')?.addEventListener('change', function () {
+            // Add filter functionality here
+            console.log('Status filter changed:', this.value);
+        });
+
+        document.getElementById('priorityFilter')?.addEventListener('change', function () {
+            // Add filter functionality here
+            console.log('Priority filter changed:', this.value);
+        });
+    });
+
+    // Test function kept for compatibility
+    function testServiceLoading() { loadPendingServices(); }
+</script>
+
+<!-- Service Approval Statistics -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Service Approval Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsPending">
+                            <%= (stats && stats.pending) || 0 %>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsApproved">
+                            <%= (stats && stats.approved) || 0 %>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="statsRejected">
+                            <%= (stats && stats.rejected) || 0 %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary refresh-services-btn">
+                        <i class="fas fa-sync"></i> Refresh Services
+                    </button>
+                    <button class="btn btn-outline-info show-debug-btn" data-message="Manual refresh triggered">
+                        <i class="fas fa-info-circle"></i> Show Debug Info
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

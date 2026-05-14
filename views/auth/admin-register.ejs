@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration - Healthcare Platform</title>
+
+    <!-- Custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --secondary-color: #858796;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-color) !important;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-user-shield fa-4x text-primary mb-3"></i>
+                            <h1 class="h2 mb-2">Admin Registration</h1>
+                            <p class="text-muted">Create administrator account</p>
+                        </div>
+
+                        
+
+                                        <form id="adminRegisterForm" method="POST" action="/register/admin">
+                                            <div class="form-group">
+                                                <label for="firstName">
+                                                    <i class="fas fa-user mr-2"></i>First Name
+                                                </label>
+                                                <input type="text" class="form-control" id="firstName" name="firstName"
+                                                    required placeholder="Enter your first name">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="lastName">
+                                                    <i class="fas fa-user mr-2"></i>Last Name
+                                                </label>
+                                                <input type="text" class="form-control" id="lastName" name="lastName"
+                                                    required placeholder="Enter your last name">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="email">
+                                                    <i class="fas fa-envelope mr-2"></i>Email Address
+                                                </label>
+                                                <input type="email" class="form-control" id="email" name="email"
+                                                    required placeholder="your.email@example.com">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="phone">
+                                                    <i class="fas fa-phone mr-2"></i>Phone Number
+                                                </label>
+                                                <input type="tel" class="form-control" id="phone" name="phone" required
+                                                    minlength="7" maxlength="20" placeholder="+1 (555) 123-4567"
+                                                    pattern="^\+?[\d\s\-\(\)]{7,20}$">
+                                                <small class="form-text text-muted">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    Format: +1 (555) 123-4567 or 123-456-7890 (7-20 characters)
+                                                </small>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="password">
+                                                    <i class="fas fa-lock mr-2"></i>Password
+                                                </label>
+                                                <input type="password" class="form-control" id="password"
+                                                    name="password" required minlength="6"
+                                                    placeholder="Create a strong password">
+                                                <div class="progress mt-2" style="height: 5px;">
+                                                    <div class="progress-bar" id="passwordStrength" role="progressbar"
+                                                        style="width: 0%"></div>
+                                                </div>
+                                                <small class="form-text text-muted" id="passwordStrengthText">
+                                                    Password must be at least 6 characters
+                                                </small>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary btn-block btn-lg">
+                                                <i class="fas fa-user-plus mr-2"></i>Register as Admin
+                                            </button>
+                                        </form>
+
+                                        <div class="text-center mt-4">
+                                            <p class="text-muted mb-0">
+                                                Already have an admin account?
+                                                <a href="/auth/admin/login" class="text-primary">
+                                                    <i class="fas fa-sign-in-alt mr-1"></i>Login here
+                                                </a>
+                                            </p>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <div class="text-center">
+                                            <a href="/" class="text-muted">
+                                                <i class="fas fa-arrow-left mr-1"></i>Back to Home
+                                            </a>
+                                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery + Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('adminRegisterForm');
+            const passwordInput = document.getElementById('password');
+            const passwordStrength = document.getElementById('passwordStrength');
+            const passwordStrengthText = document.getElementById('passwordStrengthText');
+
+            // Password strength checker
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                let feedback = '';
+                let colorClass = '';
+
+                if (password.length >= 6) strength += 20;
+                if (password.length >= 8) strength += 20;
+                if (/[a-z]/.test(password)) strength += 20;
+                if (/[A-Z]/.test(password)) strength += 20;
+                if (/[0-9]/.test(password)) strength += 20;
+
+                if (strength <= 20) {
+                    feedback = 'Very Weak';
+                    colorClass = 'bg-danger';
+                } else if (strength <= 40) {
+                    feedback = 'Weak';
+                    colorClass = 'bg-warning';
+                } else if (strength <= 60) {
+                    feedback = 'Fair';
+                    colorClass = 'bg-info';
+                } else if (strength <= 80) {
+                    feedback = 'Good';
+                    colorClass = 'bg-primary';
+                } else {
+                    feedback = 'Strong';
+                    colorClass = 'bg-success';
+                }
+
+                passwordStrength.style.width = strength + '%';
+                passwordStrength.className = 'progress-bar ' + colorClass;
+                passwordStrengthText.textContent = feedback;
+            }
+
+            // Real-time password strength checking
+            passwordInput.addEventListener('input', function () {
+                checkPasswordStrength(this.value);
+            });
+
+            // Phone number formatting
+            const phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', function () {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length >= 6) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{3})(\d{0,3})/, '($1) $2');
+                }
+                this.value = value;
+            });
+
+            // Form validation
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                let isValid = true;
+                let errorMessage = '';
+
+                // Password validation
+                const password = passwordInput.value;
+                if (password.length < 6) {
+                    isValid = false;
+                    errorMessage = 'Password must be at least 6 characters long';
+                }
+
+                // Phone validation
+                const phone = phoneInput.value;
+                const phonePattern = /^\+?[\d\s\-\(\)]{7,20}$/;
+                const cleanPhone = phone.replace(/\D/g, '');
+
+                if (!phonePattern.test(phone) || cleanPhone.length < 7) {
+                    isValid = false;
+                    errorMessage = 'Please enter a valid phone number (7-20 digits)';
+                }
+
+                if (!isValid) {
+                    // Create or update alert
+                    let alert = document.querySelector('.alert-danger');
+                    if (!alert) {
+                        alert = document.createElement('div');
+                        alert.className = 'alert alert-danger mb-4';
+                        form.insertBefore(alert, form.firstChild);
+                    }
+                    alert.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${errorMessage}`;
+                } else {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
