@@ -5,6 +5,10 @@ const isEmailConfigured = () => {
     return process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS;
 };
 
+const isResendConfigured = () => {
+    return !!process.env.RESEND_API_KEY;
+};
+
 // Create transporter with fallback for development
 const createTransporter = () => {
     if (!isEmailConfigured()) {
@@ -44,6 +48,46 @@ const createTransporter = () => {
     });
 };
 
+const sendWithResend = async (mailOptions) => {
+    if (!isResendConfigured()) {
+        throw new Error('Resend fallback is not configured.');
+    }
+
+    const timeoutMs = parseInt(process.env.RESEND_TIMEOUT || '15000', 10);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: mailOptions.from,
+                to: [mailOptions.to],
+                subject: mailOptions.subject,
+                html: mailOptions.html
+            }),
+            signal: controller.signal
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            const errorMessage = result && result.message ? result.message : 'Unknown Resend API error';
+            throw new Error(errorMessage);
+        }
+
+        return {
+            messageId: result && result.id ? result.id : 'resend-message-id'
+        };
+    } finally {
+        clearTimeout(timeout);
+    }
+};
+
 exports.sendEmail = async (options) => {
     if (!options.to) {
         throw new Error('No recipient specified');
@@ -69,8 +113,16 @@ exports.sendEmail = async (options) => {
     };
 
     try {
-        const transporter = createTransporter();
-        const info = await transporter.sendMail(mailOptions);
+        let info;
+
+        if (isEmailConfigured()) {
+            const transporter = createTransporter();
+            info = await transporter.sendMail(mailOptions);
+        } else if (isResendConfigured()) {
+            info = await sendWithResend(mailOptions);
+        } else {
+            throw new Error('Email configuration is required. Configure SMTP or RESEND_API_KEY.');
+        }
 
         console.log('✅ Email sent successfully:', {
             messageId: info.messageId,
@@ -80,6 +132,26 @@ exports.sendEmail = async (options) => {
 
         return info;
     } catch (error) {
+        const isSmtpNetworkError = error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT' || error.code === 'ESOCKET';
+
+        if (isSmtpNetworkError && isResendConfigured()) {
+            try {
+                const fallbackInfo = await sendWithResend(mailOptions);
+                console.log('✅ Email sent successfully via Resend fallback:', {
+                    messageId: fallbackInfo.messageId,
+                    to: options.to,
+                    subject: options.subject
+                });
+                return fallbackInfo;
+            } catch (fallbackError) {
+                console.error('❌ Resend fallback failed:', {
+                    error: fallbackError.message,
+                    to: options.to,
+                    subject: options.subject
+                });
+            }
+        }
+
         console.error('❌ Email sending failed:', {
             error: error.message,
             to: options.to,
@@ -100,3 +172,4 @@ exports.sendEmail = async (options) => {
 
 // Helper function to check email configuration status
 exports.isEmailConfigured = isEmailConfigured;
+exports.isResendConfigured = isResendConfigured;
