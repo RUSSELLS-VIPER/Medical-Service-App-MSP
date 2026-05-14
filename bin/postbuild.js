@@ -22,6 +22,20 @@ function copyItem(srcRel, destAbs) {
     fs.cpSync(srcAbs, destAbs, { recursive: true });
 }
 
+function copyPublicWithoutUploads(destAbs) {
+    const publicSrc = path.join(root, 'public');
+    if (!fs.existsSync(publicSrc)) return;
+    fs.cpSync(publicSrc, destAbs, {
+        recursive: true,
+        filter: (src) => {
+            const rel = path.relative(publicSrc, src);
+            if (!rel) return true;
+            const normalized = rel.replace(/\\/g, '/');
+            return !(normalized === 'uploads' || normalized.startsWith('uploads/'));
+        }
+    });
+}
+
 rmIfExists(outputRoot);
 ensureDir(computeRoot);
 ensureDir(staticRoot);
@@ -31,9 +45,9 @@ copyItem('package.json', path.join(computeRoot, 'package.json'));
 copyItem('package-lock.json', path.join(computeRoot, 'package-lock.json'));
 copyItem('app', path.join(computeRoot, 'app'));
 copyItem('views', path.join(computeRoot, 'views'));
-copyItem('public', path.join(computeRoot, 'public'));
+copyPublicWithoutUploads(path.join(computeRoot, 'public'));
 copyItem('node_modules', path.join(computeRoot, 'node_modules'));
-copyItem('public', staticRoot);
+copyPublicWithoutUploads(staticRoot);
 copyItem('deploy-manifest.json', path.join(outputRoot, 'deploy-manifest.json'));
 
 console.log('Amplify hosting bundle generated at .amplify-hosting');
