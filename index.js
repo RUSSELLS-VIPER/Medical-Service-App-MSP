@@ -25,17 +25,16 @@ const swaggerSpecs = require('./app/config/swagger');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const EXIT_ON_FATAL = process.env.EXIT_ON_FATAL === 'true';
 
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/msp';
 const MONGO_DB_NAME = process.env.MONGO_DB_NAME || 'msp';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'fallback-secret-key-change-in-production';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-jwt-secret-change-in-production';
 
-try {
-    connectDB();
-} catch (error) {
-    console.error('❌ Failed to connect to MongoDB:', error.message);
-}
+connectDB().catch((error) => {
+    console.error('Failed to connect to MongoDB:', error && error.message ? error.message : error);
+});
 
 app.use(helmet({
     contentSecurityPolicy: {
@@ -97,19 +96,26 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+let sessionStore;
+try {
+    sessionStore = MongoStore.create({
+        mongoUrl: MONGO_URI,
+        dbName: MONGO_DB_NAME,
+        ttl: 24 * 60 * 60
+    });
+} catch (error) {
+    console.error('Session store fallback to memory:', error.message);
+}
+
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: MONGO_URI,
-        dbName: MONGO_DB_NAME,
-        ttl: 24 * 60 * 60 // 1 day
-    }),
+    ...(sessionStore ? { store: sessionStore } : {}),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
@@ -174,6 +180,18 @@ app.get('/docs', (req, res) => {
 app.get('/api-docs.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpecs);
+});
+
+app.get('/health', (req, res) => {
+    const mongoose = require('mongoose');
+    const readyStateMap = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+    const dbState = readyStateMap[mongoose.connection.readyState] || 'unknown';
+    res.status(200).json({
+        ok: true,
+        uptime: process.uptime(),
+        env: process.env.NODE_ENV || 'development',
+        dbState
+    });
 });
 
 // Direct profile handler (early) to avoid any routing order issues
@@ -279,14 +297,14 @@ process.on('unhandledRejection', (reason, promise) => {
     try {
         console.error('Unhandled Promise Rejection:', reason);
     } catch { }
-    process.exit(1);
+    if (EXIT_ON_FATAL) process.exit(1);
 });
 
 process.on('uncaughtException', (error) => {
     try {
         console.error('Uncaught Exception:', error && error.stack ? error.stack : error);
     } catch { }
-    process.exit(1);
+    if (EXIT_ON_FATAL) process.exit(1);
 });
 
 process.on('SIGTERM', () => {
@@ -303,8 +321,11 @@ server.on('error', (error) => {
     console.error('Server error:', error && error.stack ? error.stack : error);
     if (error.code === 'EADDRINUSE') {
         console.error(`Port ${PORT} is already in use.`);
-        process.exit(1);
+        if (EXIT_ON_FATAL) process.exit(1);
     } else {
-        process.exit(1);
+        if (EXIT_ON_FATAL) process.exit(1);
     }
 });
+
+
+

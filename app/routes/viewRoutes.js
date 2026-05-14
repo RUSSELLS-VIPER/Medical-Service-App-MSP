@@ -193,7 +193,23 @@ router.get('/', async (req, res, next) => {
             }
         });
     } catch (err) {
-        next(err);
+        console.error('Home page data loading failed:', err.message);
+
+        // Graceful fallback for production environments where DB queries may fail intermittently.
+        return res.status(200).render('index', {
+            title: 'Welcome',
+            user: req.user || null,
+            currentPage: 'home',
+            serviceCategories: [],
+            featuredServices: [],
+            topProviders: [],
+            stats: {
+                patients: 0,
+                providers: 0,
+                services: 0,
+                appointments: 0
+            }
+        });
     }
 });
 
