@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
+    "build": "echo \"Preparing Amplify hosting bundle\"",
+    "postbuild": "node bin/postbuild.js",
     "dev": "nodemon --inspect index.js",
     "fast": "NODE_ENV=development nodemon --ignore 'public/*' --ignore 'views/*' index.js",
     "fast-dev": "nodemon dev-server.js",

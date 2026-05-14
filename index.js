@@ -1,4 +1,11 @@
-require('dotenv').config({ path: './env.config' });
+const fs = require('fs');
+const dotenv = require('dotenv');
+
+if (fs.existsSync('./.env')) {
+    dotenv.config({ path: './.env' });
+} else if (fs.existsSync('./env.config')) {
+    dotenv.config({ path: './env.config' });
+}
 
 const express = require("express");
 const path = require("path");
