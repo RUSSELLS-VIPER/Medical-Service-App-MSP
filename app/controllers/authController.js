@@ -62,12 +62,18 @@ class AuthController {
             const token = generateVerificationToken(patient._id, 'patient');
             const url = `${process.env.SERVER_URL}/auth/verify-email?token=${token}`;
 
-            // Send verification email
-            await sendEmail({
-                to: patient.email,
-                subject: 'Verify Your Email',
-                html: `<p>Click <a href="${url}">here</a> to verify your email. This link expires in 24 hours.</p>`
-            });
+            let emailWarning = null;
+            try {
+                // Send verification email
+                await sendEmail({
+                    to: patient.email,
+                    subject: 'Verify Your Email',
+                    html: `<p>Click <a href="${url}">here</a> to verify your email. This link expires in 24 hours.</p>`
+                });
+            } catch (emailError) {
+                console.error('❌ Email sending failed during patient registration:', emailError.message);
+                emailWarning = 'Email service temporarily unavailable. Please use resend verification later.';
+            }
 
             // If this was a form submission (HTML), render a success page; otherwise return JSON
             const prefersHtml = (req.headers['accept'] || '').includes('text/html');
@@ -76,13 +82,21 @@ class AuthController {
             if (prefersHtml || isFormPost) {
                 return res.status(201).render('auth/check-inbox', {
                     title: 'Check Your Email',
-                    message: 'Registration successful. Please check your email to verify.',
+                    message: emailWarning
+                        ? 'Registration successful. Verification email is delayed. Please use resend verification from login page.'
+                        : 'Registration successful. Please check your email to verify.',
                     email: patient.email,
                     redirectUrl: '/auth/patient/login'
                 });
             }
 
-            res.status(201).json({ success: true, message: 'Registration successful. Please check your email to verify.' });
+            res.status(201).json({
+                success: true,
+                message: emailWarning
+                    ? 'Registration successful. Verification email could not be sent right now.'
+                    : 'Registration successful. Please check your email to verify.',
+                warning: emailWarning
+            });
 
 
 

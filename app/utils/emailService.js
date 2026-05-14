@@ -27,10 +27,16 @@ const createTransporter = () => {
         throw new Error('Email configuration is required. Please set EMAIL_HOST, EMAIL_USER, and EMAIL_PASS environment variables.');
     }
 
+    const smtpPort = parseInt(process.env.EMAIL_PORT || '587', 10);
+    const smtpSecure = process.env.EMAIL_SECURE === 'true' || smtpPort === 465;
+
     return nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
-        port: parseInt(process.env.EMAIL_PORT || '587'),
-        secure: false,
+        port: smtpPort,
+        secure: smtpSecure,
+        connectionTimeout: parseInt(process.env.EMAIL_CONNECTION_TIMEOUT || '15000', 10),
+        greetingTimeout: parseInt(process.env.EMAIL_GREETING_TIMEOUT || '10000', 10),
+        socketTimeout: parseInt(process.env.EMAIL_SOCKET_TIMEOUT || '20000', 10),
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -84,8 +90,8 @@ exports.sendEmail = async (options) => {
         // Provide more specific error messages
         if (error.code === 'EAUTH') {
             throw new Error('Email authentication failed. Please check EMAIL_USER and EMAIL_PASS.');
-        } else if (error.code === 'ECONNECTION') {
-            throw new Error('Email connection failed. Please check EMAIL_HOST and EMAIL_PORT.');
+        } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT' || error.code === 'ESOCKET') {
+            throw new Error('Email connection failed or timed out. Please check EMAIL_HOST, EMAIL_PORT, and provider network access.');
         } else {
             throw new Error(`Failed to send email: ${error.message}`);
         }
